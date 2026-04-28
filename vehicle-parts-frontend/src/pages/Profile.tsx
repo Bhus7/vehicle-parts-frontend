@@ -2,32 +2,48 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Appointment from "../components/Appointment";
 
-const Profile = () => {
+// Types
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+};
+
+type FormType = {
+  name: string;
+  phone: string;
+};
+
+const Profile: React.FC = () => {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState<User | null>(() => {
     const data = localStorage.getItem("user");
     return data ? JSON.parse(data) : null;
   });
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormType>({
     name: user?.name || "",
     phone: user?.phone || "",
   });
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     localStorage.removeItem("user");
     navigate("/login");
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSave = () => {
-    const updatedUser = { ...user, ...form };
+  const handleSave = (): void => {
+    if (!user) return;
+
+    const updatedUser: User = { ...user, ...form };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);
@@ -66,7 +82,7 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Profile Section */}
+      {/* Profile + Vehicle */}
       <div className="grid md:grid-cols-2 gap-6">
 
         {/* Profile Info */}
@@ -155,7 +171,9 @@ const Profile = () => {
         </div>
 
       </div>
-      <Appointment/>
+
+      {/* Appointment Section */}
+      <Appointment />
 
     </div>
   );

@@ -1,11 +1,19 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+
+type FormType = {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: string;
+};
 
 const Register = () => {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormType>({
     name: "",
     email: "",
     password: "",
@@ -13,19 +21,22 @@ const Register = () => {
     role: "Customer",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     try {
       await API.post("/customers/register", form);
       alert("Registration successful");
       navigate("/profile");
-    } catch (err) {
+    } catch (err: any) {
       alert("Registration failed");
-      console.log(err)
+      console.log(err.response?.data || err.message);
     }
   };
 
@@ -43,6 +54,7 @@ const Register = () => {
             <label className="block text-sm text-gray-600 mb-1">Full Name</label>
             <input
               name="name"
+              value={form.name}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -54,6 +66,7 @@ const Register = () => {
             <input
               name="email"
               type="email"
+              value={form.email}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -65,6 +78,7 @@ const Register = () => {
             <input
               name="password"
               type="password"
+              value={form.password}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -75,6 +89,7 @@ const Register = () => {
             <label className="block text-sm text-gray-600 mb-1">Phone Number</label>
             <input
               name="phone"
+              value={form.phone}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -85,8 +100,8 @@ const Register = () => {
             <label className="block text-sm text-gray-600 mb-1">Role</label>
             <select
               name="role"
-              onChange={handleChange}
               value={form.role}
+              onChange={handleChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2"
             >
               <option value="Customer">Customer</option>

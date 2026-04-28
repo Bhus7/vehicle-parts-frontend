@@ -1,28 +1,42 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+
+type FormType = {
+  email: string;
+  password: string;
+};
+
+type UserType = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+};
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormType>({
     email: "",
     password: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     try {
-      const res = await API.post("/customers/login", form);
+      const res = await API.post<UserType>("/customers/login", form);
       const user = res.data;
 
       localStorage.setItem("user", JSON.stringify(user));
 
-      //  Role-based redirect
+      // Role-based redirect
       if (user.role === "Admin") {
         navigate("/admin-dashboard");
       } else if (user.role === "Staff") {
@@ -30,10 +44,9 @@ const Login = () => {
       } else {
         navigate("/profile");
       }
-
     } catch (err) {
       alert("Invalid email or password");
-      console.log(err)
+      console.log(err);
     }
   };
 
@@ -52,6 +65,7 @@ const Login = () => {
             <input
               name="email"
               type="email"
+              value={form.email}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -63,6 +77,7 @@ const Login = () => {
             <input
               name="password"
               type="password"
+              value={form.password}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -78,7 +93,7 @@ const Login = () => {
         </form>
 
         <p className="text-sm text-center text-gray-600 mt-6">
-          Don’t have an account?{" "}
+          Don’t have an account{" "}
           <span
             onClick={() => navigate("/register")}
             className="text-blue-600 cursor-pointer hover:underline"

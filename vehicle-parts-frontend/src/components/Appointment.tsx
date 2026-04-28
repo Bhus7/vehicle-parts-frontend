@@ -1,101 +1,133 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+
+// Types
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+};
+
+type AppointmentType = {
+  id: number;
+  vehicleNumber: string;
+  appointmentDate: string;
+  description: string;
+  status: string;
+  customerId: number;
+};
+
+type FormType = {
+  vehicleNumber: string;
+  appointmentDate: string;
+  description: string;
+};
 
 const Appointment = () => {
   const navigate = useNavigate();
 
+  // Get user safely
+  const user: User | null = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
 
-const user = JSON.parse(localStorage.getItem("user"));
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormType>({
     vehicleNumber: "",
     appointmentDate: "",
     description: "",
   });
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  // Load user safely
-useEffect(() => {
-  if (!user) {
-    navigate("/login");
-  }
-}, [user, navigate]);
+  const [appointments, setAppointments] = useState<AppointmentType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  // 🔹 Fetch appointments (SAFE)
-useEffect(() => {
-  if (!user?.id) return;
-
-  const fetchAppointments = async () => {
-    try {
-      const res = await API.get(`/appointments/${user.id}`);
-      setAppointments(res.data);
-    } catch (err) {
-      console.log(err);
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
     }
-  };
+  }, [user, navigate]);
 
-  fetchAppointments();
-}, [user?.id]);
+  // Fetch appointments
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchAppointments = async () => {
+      try {
+        const res = await API.get<AppointmentType[]>(
+          `/appointments/${user.id}`
+        );
+        setAppointments(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchAppointments();
+  }, [user?.id]);
 
   // Handle input
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Book appointment
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  // Submit
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-  // Validate
-  if (!form.vehicleNumber || !form.appointmentDate || !form.description) {
-    alert("All fields are required");
-    return;
-  }
+    if (!form.vehicleNumber || !form.appointmentDate || !form.description) {
+      alert("All fields are required");
+      return;
+    }
 
-  try {
-    setLoading(true);
+    if (!user) return;
 
+    try {
+      setLoading(true);
 
-    await API.post("/appointments", {
-      vehicleNumber: form.vehicleNumber,
-      appointmentDate: new Date(form.appointmentDate).toISOString(),
-      description: form.description,
-      customerId: user.id,
-    });
+      await API.post("/appointments", {
+        vehicleNumber: form.vehicleNumber,
+        appointmentDate: new Date(form.appointmentDate).toISOString(),
+        description: form.description,
+        customerId: user.id,
+      });
 
-    alert("Appointment booked successfully");
+      alert("Appointment booked successfully");
 
-    // reset form
-    setForm({
-      vehicleNumber: "",
-      appointmentDate: "",
-      description: "",
-    });
+      // reset form
+      setForm({
+        vehicleNumber: "",
+        appointmentDate: "",
+        description: "",
+      });
 
-    // refresh list
-    const res = await API.get(`/appointments/${user.id}`);
-    setAppointments(res.data);
+      // refresh list
+      const res = await API.get<AppointmentType[]>(
+        `/appointments/${user.id}`
+      );
+      setAppointments(res.data);
 
-  } catch (err) {
-    console.log(err.response?.data || err.message);
-    alert("Error booking appointment");
-  } finally {
-    setLoading(false);
-  }
-};
-
+    } catch (err: any) {
+      console.log(err.response?.data || err.message);
+      alert("Error booking appointment");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
 
       {/* Header */}
       <div className="bg-white shadow px-6 py-4 rounded-lg mb-6">
-  <h2 className="text-xl font-semibold text-blue-600">
-    My Appointments
-  </h2>
-</div>
-
+        <h2 className="text-xl font-semibold text-blue-600">
+          My Appointments
+        </h2>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-6">
 
