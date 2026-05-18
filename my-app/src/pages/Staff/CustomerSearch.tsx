@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Search, User, Phone, Car, ChevronRight, Eye, AlertCircle, UserPlus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Search, Phone, Car, ChevronRight, AlertCircle, UserPlus, Mail, Hash, Filter, ArrowUpDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { staffApi } from '../../api/api';
+import { Card, Button } from '../../components/ui-components';
 
 const CustomerSearch = () => {
   const [query, setQuery] = useState('');
@@ -11,11 +13,9 @@ const CustomerSearch = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Live Search Effect
     const delayDebounceFn = setTimeout(() => {
       performSearch();
     }, 300);
-
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
@@ -27,204 +27,163 @@ const CustomerSearch = () => {
       setResults(response.data);
     } catch (err) {
       console.error('Search failed', err);
-      setError('Could not load customer data. Please check your backend connection.');
+      setError('System failure while querying customer nodes. Please verify network status.');
     } finally {
       setLoading(false);
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+  };
+
+  const rowVariants = {
+    hidden: { x: -20, opacity: 0 },
+    visible: { x: 0, opacity: 1 }
+  };
+
   return (
-    <div className="fade-in">
-      <div className="page-header">
-        <h1>Customer Records</h1>
-        <p className="text-muted">Search and manage customer profiles.</p>
+    <div className="max-w-7xl mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <span className="text-indigo-500 font-bold tracking-[0.2em] text-[10px] uppercase mb-2 block">Database Access</span>
+          <h1 className="text-4xl font-outfit font-bold text-white mb-2">Customer Registry</h1>
+          <p className="text-slate-400">Query and manage identity records across the AutoParts network.</p>
+        </div>
+        <Button variant="primary" className="gap-2 px-8" onClick={() => navigate('/staff/register')}>
+           <UserPlus size={18} />
+           Provision Customer
+        </Button>
       </div>
 
-      <div className="search-container glass">
-        <div className="search-bar">
-          <Search size={22} className="text-muted" />
+      <Card className="p-2 border-white/5 bg-slate-900/40 sticky top-[100px] z-10 backdrop-blur-xl">
+        <div className="flex items-center gap-4 px-4 py-2">
+          <Search size={20} className="text-indigo-500" />
           <input 
-            placeholder="Type to filter by name, phone, or vehicle plate..." 
+            className="flex-1 bg-transparent border-none outline-none text-lg text-white placeholder:text-slate-600 py-2"
+            placeholder="Search by identity, contact string, or vehicle plate..." 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-        </div>
-      </div>
-
-      <div className="results-section">
-        {loading ? (
-          <div className="loading-spinner">Searching records...</div>
-        ) : error ? (
-          <div className="no-results glass" style={{ borderColor: 'var(--error)' }}>
-            <AlertCircle size={40} className="error" style={{ marginBottom: '1rem' }} />
-            <p>{error}</p>
+          <div className="hidden md:flex items-center gap-2">
+             <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global</div>
+             <Filter size={18} className="text-slate-600 hover:text-white cursor-pointer transition-colors" />
           </div>
+        </div>
+      </Card>
+
+      <div className="space-y-4">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-xs font-black text-slate-600 uppercase tracking-[0.2em]">Executing Query...</p>
+          </div>
+        ) : error ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <Card className="p-12 border-rose-500/20 bg-rose-500/5 text-center">
+              <AlertCircle size={48} className="text-rose-500 mx-auto mb-4" />
+              <p className="text-rose-400 font-bold">{error}</p>
+            </Card>
+          </motion.div>
         ) : results.length > 0 ? (
-          <div className="results-table glass">
-            <table>
-              <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Contact</th>
-                  <th>Vehicles</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((customer) => (
-                  <tr key={customer.userID} className="result-row">
-                    <td>
-                      <div className="name-cell">
-                        <div className="avatar-small">{customer.fullName[0]}</div>
-                        <div>
-                          <p className="name">{customer.fullName}</p>
-                          <p className="id">ID: #{customer.userID}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="contact-cell">
-                        <p><Phone size={14} /> {customer.phone}</p>
-                        <p className="email">{customer.email}</p>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="vehicle-tags">
-                        {customer.vehicles.map((v: string) => (
-                          <span key={v} className="vehicle-tag"><Car size={12} /> {v}</span>
-                        ))}
-                      </div>
-                    </td>
-                    <td>
-                      <button 
-                        className="view-details-btn"
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4"
+          >
+            <Card className="overflow-hidden border-white/5">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead className="bg-white/[0.02] border-b border-white/5">
+                    <tr>
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <div className="flex items-center gap-2">Citizen Identity <ArrowUpDown size={12} /></div>
+                      </th>
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Contact Vector</th>
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Fleet Data</th>
+                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Operations</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {results.map((customer) => (
+                      <motion.tr 
+                        variants={rowVariants}
+                        key={customer.userID} 
+                        className="group hover:bg-white/[0.02] transition-colors cursor-pointer"
                         onClick={() => navigate(`/staff/customer/${customer.userID}`)}
                       >
-                        <Eye size={18} /> View Profile
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300 font-bold text-lg">
+                              {customer.fullName[0]}
+                            </div>
+                            <div>
+                               <p className="font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{customer.fullName}</p>
+                               <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono mt-0.5">
+                                 <Hash size={10} />
+                                 <span>{customer.userID.toString().padStart(6, '0')}</span>
+                               </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6">
+                           <div className="space-y-1">
+                             <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                               <Phone size={12} className="text-indigo-500" />
+                               {customer.phone}
+                             </div>
+                             <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                               <Mail size={12} />
+                               {customer.email}
+                             </div>
+                           </div>
+                        </td>
+                        <td className="px-8 py-6">
+                           <div className="flex flex-wrap gap-2">
+                             {customer.vehicles && customer.vehicles.length > 0 ? (
+                               customer.vehicles.map((v: string) => (
+                                <span key={v} className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 text-[10px] font-bold text-slate-400 flex items-center gap-2 group-hover:border-indigo-500/30 transition-colors">
+                                  <Car size={12} className="text-indigo-500" /> {v}
+                                </span>
+                               ))
+                             ) : (
+                               <span className="text-[10px] text-slate-700 italic uppercase">No craft registered</span>
+                             )}
+                           </div>
+                        </td>
+                        <td className="px-8 py-6 text-right">
+                           <Button 
+                             size="sm" 
+                             variant="secondary" 
+                             className="opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0"
+                           >
+                             Full Profile <ChevronRight size={14} className="ml-1" />
+                           </Button>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </motion.div>
         ) : (
-          <div className="no-results glass">
-            <UserPlus size={40} style={{ marginBottom: '1rem', opacity: 0.5 }} />
-            <p>No customer records found.</p>
-            <p className="text-muted" style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
-              Try searching for someone else or register a new customer.
-            </p>
-          </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <Card className="p-24 text-center border-dashed border-white/5 bg-transparent">
+               <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center text-slate-700 mx-auto mb-6 border border-white/5">
+                 <Search size={40} />
+               </div>
+               <h3 className="text-xl font-bold text-white mb-2">No results matched your query</h3>
+               <p className="text-slate-500 max-w-sm mx-auto text-sm">Attempt to identify by different parameters or initiate a new customer provisioning protocol.</p>
+               <Button variant="outline" className="mt-8 gap-2 border-white/10" onClick={() => setQuery('')}>
+                  Clear Query
+               </Button>
+            </Card>
+          </motion.div>
         )}
       </div>
-
-      <style>{`
-        .search-container {
-          margin-top: 2rem;
-          padding: 1.5rem;
-          border-radius: 20px;
-        }
-        .search-bar {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
-        .search-bar input {
-          flex: 1;
-          background: transparent;
-          border: none;
-          font-size: 1.1rem;
-          padding: 0.5rem;
-        }
-        .search-btn {
-          background: var(--primary);
-          color: white;
-          padding: 0.8rem 2rem;
-          font-weight: 600;
-        }
-        .results-section {
-          margin-top: 2rem;
-        }
-        .results-table {
-          border-radius: 20px;
-          overflow: hidden;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        th {
-          text-align: left;
-          padding: 1.2rem 1.5rem;
-          background: rgba(255,255,255,0.03);
-          color: var(--text-muted);
-          font-size: 0.8rem;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-        td {
-          padding: 1.2rem 1.5rem;
-          border-top: 1px solid var(--border);
-        }
-        .result-row:hover {
-          background: rgba(255,255,255,0.02);
-        }
-        .name-cell { display: flex; align-items: center; gap: 1rem; }
-        .avatar-small {
-          width: 36px;
-          height: 36px;
-          background: rgba(99, 102, 241, 0.2);
-          color: var(--primary);
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-        }
-        .name { font-weight: 600; }
-        .id { font-size: 0.75rem; color: var(--text-muted); }
-        .contact-cell p { font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
-        .email { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
-        .vehicle-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-        .vehicle-tag {
-          background: rgba(255,255,255,0.05);
-          padding: 0.3rem 0.6rem;
-          border-radius: 6px;
-          font-size: 0.75rem;
-          display: flex;
-          align-items: center;
-          gap: 0.4rem;
-          color: var(--primary);
-        }
-        .view-details-btn {
-          background: var(--primary);
-          color: white;
-          border: none;
-          padding: 0.6rem 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.85rem;
-          font-weight: 700;
-          border-radius: 6px;
-          box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
-        }
-        .view-details-btn:hover {
-          background: var(--primary-hover);
-          transform: translateY(-1px);
-          box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
-        }
-        .view-details-btn:active {
-          transform: translateY(0);
-        }
-        .no-results {
-          padding: 3rem;
-          text-align: center;
-          border-radius: 20px;
-          color: var(--text-muted);
-        }
-      `}</style>
     </div>
   );
 };

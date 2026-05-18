@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Search, Plus, Minus, Trash2, Receipt, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingCart, Search, Plus, Minus, Trash2, CheckCircle2, AlertCircle, Package, ArrowRight, CreditCard, Wallet, Banknote, User as UserIcon } from 'lucide-react';
 import { staffApi } from '../../api/api';
 import { Link } from 'react-router-dom';
+import { Button, Card, Input } from '../../components/ui-components';
 
 interface Part {
   partID: number;
@@ -21,7 +23,7 @@ const SalesTerminal = () => {
   const [customerId, setCustomerId] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState('Cash');
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<{ type: 'success' | 'error' | null, message: string }>({ type: null, message: '' });
+  const [status, setStatus] = useState<{ type: 'success' | 'error' | null, message: React.ReactNode }>({ type: null, message: '' });
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -90,17 +92,17 @@ const SalesTerminal = () => {
       setStatus({ 
         type: 'success', 
         message: (
-          <span>
-            Invoice #{response.data.invoiceID} created! 
-            <Link to={`/staff/invoice/${response.data.invoiceID}`} style={{ marginLeft: '10px', textDecoration: 'underline', fontWeight: 'bold' }}>
-              View Invoice
+          <div className="flex flex-col gap-1">
+            <span>Transaction Complete! Invoice #{response.data.invoiceID} generated.</span>
+            <Link to={`/staff/invoice/${response.data.invoiceID}`} className="text-white underline font-bold flex items-center gap-1 hover:text-indigo-200 transition-colors">
+              View Receipt <ArrowRight size={14} />
             </Link>
-          </span>
-        ) as any
+          </div>
+        )
       });
       setCart([]);
       setCustomerId('');
-      loadParts(); // Refresh stock quantities
+      loadParts(); 
     } catch (error: any) {
       setStatus({ type: 'error', message: error.response?.data || 'Checkout failed.' });
     } finally {
@@ -114,329 +116,219 @@ const SalesTerminal = () => {
   );
 
   return (
-    <div className="fade-in">
-      <div className="page-header">
-        <h1>Sales Terminal</h1>
-        <p className="text-muted">Process parts sales and generate customer invoices.</p>
-      </div>
-
-      <div className="sales-layout">
-        {/* Left: Product Selection */}
-        <div className="product-catalog">
-          <div className="search-box glass">
-            <Search size={20} className="text-muted" />
+    <div className="max-w-[1600px] mx-auto">
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span className="text-indigo-500 font-bold tracking-[0.2em] text-xs uppercase mb-2 block">Terminal</span>
+          <h1 className="text-4xl font-outfit font-bold text-white mb-2">Sales Interface</h1>
+          <p className="text-slate-400">Process spare parts transactions and fulfillment.</p>
+        </div>
+        <div className="flex bg-slate-800/50 p-1.5 rounded-2xl border border-white/5 md:w-96">
+            <Search className="ml-3 mt-2.5 text-slate-500" size={18} />
             <input 
-              placeholder="Search parts by name or category..." 
+              className="bg-transparent border-none outline-none text-sm p-2.5 w-full text-slate-200"
+              placeholder="Filter inventory by name or category..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-
-          <div className="parts-grid">
-            {filteredParts.map(part => (
-              <div key={part.partID} className="part-card glass">
-                <div className="part-info">
-                  <h4>{part.partName}</h4>
-                  <p className="category">{part.category}</p>
-                  <p className="stock">Stock: <span className={part.stockQuantity < 10 ? 'low' : ''}>{part.stockQuantity}</span></p>
-                </div>
-                <div className="part-footer">
-                  <span className="price">${part.unitPrice}</span>
-                  <button 
-                    className="add-btn" 
-                    onClick={() => addToCart(part)}
-                    disabled={part.stockQuantity === 0}
-                  >
-                    <Plus size={18} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
-
-        {/* Right: Cart & Checkout */}
-        <aside className="checkout-sidebar glass">
-          <div className="checkout-header">
-            <ShoppingCart size={24} />
-            <h3>Current Order</h3>
-          </div>
-
-          <div className="customer-input">
-            <label>Customer ID</label>
-            <input 
-              type="number" 
-              placeholder="Enter User ID" 
-              value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
-            />
-          </div>
-
-          <div className="cart-items">
-            {cart.length === 0 ? (
-              <div className="empty-cart text-muted">Your cart is empty.</div>
-            ) : (
-              cart.map(item => (
-                <div key={item.partID} className="cart-item">
-                  <div className="item-main">
-                    <p className="item-name">{item.partName}</p>
-                    <p className="item-price">${item.unitPrice * item.selectedQuantity}</p>
-                  </div>
-                  <div className="item-controls">
-                    <div className="qty-picker">
-                      <button onClick={() => updateQuantity(item.partID, -1)}><Minus size={14} /></button>
-                      <span>{item.selectedQuantity}</span>
-                      <button onClick={() => updateQuantity(item.partID, 1)}><Plus size={14} /></button>
-                    </div>
-                    <button className="remove-btn" onClick={() => removeFromCart(item.partID)}>
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className="order-summary">
-            <div className="summary-row">
-              <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-            {discount > 0 && (
-              <div className="summary-row discount">
-                <span>Loyalty Discount (10%)</span>
-                <span>-${discount.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="summary-row total">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <div className="payment-selection">
-            <label>Payment Method</label>
-            <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-              <option value="Cash">Cash</option>
-              <option value="Card">Credit Card</option>
-              <option value="Credit">Store Credit</option>
-            </select>
-          </div>
-
-          <button 
-            className="checkout-btn" 
-            onClick={handleCheckout} 
-            disabled={loading || cart.length === 0}
-          >
-            {loading ? 'Processing...' : 'Complete Purchase'}
-          </button>
-
-          {status.type && (
-            <div className={`status-msg ${status.type}`}>
-              {status.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-              <span>{status.message}</span>
-            </div>
-          )}
-        </aside>
       </div>
 
-      <style>{`
-        .sales-layout {
-          display: grid;
-          grid-template-columns: 1fr 350px;
-          gap: 2rem;
-          margin-top: 2rem;
-        }
-        .search-box {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 0.8rem 1.5rem;
-          border-radius: 12px;
-          margin-bottom: 2rem;
-        }
-        .search-box input {
-          width: 100%;
-          background: transparent;
-          border: none;
-          padding: 0;
-        }
-        .parts-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-          gap: 1.5rem;
-        }
-        .part-card {
-          padding: 1.5rem;
-          border-radius: 20px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          transition: transform 0.3s ease;
-        }
-        .part-card:hover {
-          transform: translateY(-5px);
-        }
-        .part-info h4 { margin-bottom: 0.5rem; font-size: 1.1rem; }
-        .category { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem; }
-        .stock { font-size: 0.85rem; color: var(--text-muted); }
-        .stock span.low { color: var(--error); font-weight: bold; }
-        .part-footer {
-          margin-top: 1.5rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .price { font-size: 1.2rem; font-weight: 800; color: white; }
-        .add-btn {
-          background: #f1f5f9;
-          color: var(--primary);
-          border: 1px solid var(--border);
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 8px;
-          font-weight: bold;
-        }
-        .add-btn:hover {
-          background: var(--primary);
-          color: white;
-          border-color: var(--primary);
-        }
-        .checkout-sidebar {
-          padding: 2rem;
-          background: white;
-          border: 1px solid var(--border);
-          border-radius: 16px;
-          height: fit-content;
-          position: sticky;
-          top: 20px;
-        }
-        .checkout-header {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 2rem;
-          color: var(--primary);
-        }
-        .customer-input, .payment-selection {
-          margin-bottom: 1.5rem;
-        }
-        .customer-input label, .payment-selection label {
-          display: block;
-          font-size: 0.8rem;
-          font-weight: 700;
-          margin-bottom: 0.5rem;
-          color: var(--text-muted);
-        }
-        .customer-input input, .payment-selection select {
-          width: 100%;
-        }
-        .cart-items {
-          margin: 2rem 0;
-          min-height: 100px;
-          max-height: 400px;
-          overflow-y: auto;
-        }
-        .cart-item {
-          padding: 1.25rem 0;
-          border-bottom: 1px solid var(--border);
-        }
-        .item-main {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 1rem;
-        }
-        .item-name { font-weight: 600; font-size: 0.95rem; }
-        .item-controls {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        .qty-picker {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: #f8fafc;
-          padding: 4px;
-          border-radius: 8px;
-          border: 1px solid var(--border);
-        }
-        .qty-picker button {
-          background: white;
-          color: var(--text);
-          border: 1px solid var(--border);
-          width: 28px;
-          height: 28px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 4px;
-        }
-        .qty-picker button:hover {
-          background: var(--primary);
-          color: white;
-          border-color: var(--primary);
-        }
-        .qty-picker span {
-          width: 30px;
-          text-align: center;
-          font-weight: 700;
-          font-size: 0.9rem;
-        }
-        .remove-btn { 
-          background: transparent; 
-          color: #94a3b8; 
-          border: none;
-          padding: 8px;
-        }
-        .remove-btn:hover { color: var(--error); background: #fef2f2; border-radius: 6px; }
-        .order-summary {
-          background: rgba(255,255,255,0.03);
-          padding: 1.5rem;
-          border-radius: 16px;
-          margin-bottom: 1.5rem;
-        }
-        .summary-row {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 0.5rem;
-          font-size: 0.9rem;
-        }
-        .discount { color: var(--success); font-weight: 600; }
-        .total {
-          margin-top: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid var(--border);
-          font-size: 1.2rem;
-          font-weight: 800;
-          color: white;
-        }
-        .checkout-btn {
-          width: 100%;
-          background: var(--success);
-          color: white;
-          padding: 1rem;
-          font-weight: 700;
-          font-size: 1rem;
-          box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.3);
-        }
-        .status-msg {
-          margin-top: 1rem;
-          padding: 0.8rem;
-          border-radius: 8px;
-          font-size: 0.85rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-        .status-msg.success { background: rgba(34, 197, 94, 0.1); color: var(--success); }
-        .status-msg.error { background: rgba(239, 68, 68, 0.1); color: var(--error); }
-      `}</style>
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8 items-start">
+        {/* Parts Catalog */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+          <AnimatePresence mode="popLayout">
+            {filteredParts.map((part) => (
+              <motion.div
+                key={part.partID}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Card className="group hover:border-indigo-500/50 transition-all duration-300">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                        <Package size={24} />
+                      </div>
+                      <span className={`text-[10px] uppercase font-black px-3 py-1 rounded-full border ${
+                        part.stockQuantity < 10 
+                        ? 'bg-red-500/10 border-red-500/20 text-red-500 animate-pulse' 
+                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+                      }`}>
+                        {part.stockQuantity < 10 ? 'Low Stock' : 'In Stock'}
+                      </span>
+                    </div>
+
+                    <h3 className="font-bold text-white group-hover:text-indigo-400 transition-colors mb-1 truncate">{part.partName}</h3>
+                    <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-4">{part.category}</p>
+                    
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-xl font-black text-white">${part.unitPrice}</span>
+                      <button 
+                        onClick={() => addToCart(part)}
+                        disabled={part.stockQuantity === 0}
+                        className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center hover:bg-indigo-600 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+                      >
+                        <Plus size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Sidebar: Cart & Checkout */}
+        <div className="sticky top-[100px] z-20">
+          <Card className="p-0 border-white/10 ring-1 ring-white/5 shadow-2xl">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+              <div className="flex items-center gap-3 text-indigo-400">
+                <ShoppingCart size={20} />
+                <h3 className="font-bold text-lg font-outfit uppercase tracking-wider text-white">Active Cart</h3>
+              </div>
+              <span className="text-xs font-black px-2 py-1 bg-indigo-500 rounded-lg text-white">
+                {cart.length} ITEMS
+              </span>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Customer Link</label>
+                <div className="relative">
+                  <UserIcon className="absolute left-4 top-3.5 text-slate-500" size={16} />
+                  <Input 
+                    placeholder="Search User ID..." 
+                    className="pl-12 bg-white/5 border-white/5" 
+                    value={customerId}
+                    onChange={(e) => setCustomerId(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="max-h-[300px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                {cart.length === 0 ? (
+                  <div className="py-12 text-center text-slate-600 italic text-sm">
+                    Cart is currently empty.
+                  </div>
+                ) : (
+                  cart.map(item => (
+                    <motion.div 
+                      key={item.partID} 
+                      layout
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="p-4 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-4"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-white text-sm truncate">{item.partName}</p>
+                        <p className="text-indigo-400 font-bold text-xs">${item.unitPrice * item.selectedQuantity}</p>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 bg-slate-900 rounded-lg p-1 border border-white/5">
+                        <button 
+                          className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white"
+                          onClick={() => updateQuantity(item.partID, -1)}
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span className="text-xs font-bold w-4 text-center">{item.selectedQuantity}</span>
+                        <button 
+                         className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white"
+                         onClick={() => updateQuantity(item.partID, 1)}
+                        >
+                          <Plus size={12} />
+                        </button>
+                      </div>
+
+                      <button 
+                        onClick={() => removeFromCart(item.partID)}
+                        className="p-2 text-slate-600 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+
+              <div className="p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-medium">Subtotal</span>
+                  <span className="text-white font-bold">${subtotal.toFixed(2)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-emerald-400 font-medium">Loyalty Discount (10%)</span>
+                    <span className="text-emerald-400 font-bold">-${discount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="pt-3 border-t border-indigo-500/30 flex justify-between">
+                  <span className="text-white font-black text-lg uppercase font-outfit">Total Due</span>
+                  <span className="text-indigo-400 font-black text-2xl">${total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Settlement Method</label>
+                <div className="grid grid-cols-3 gap-2">
+                   {['Cash', 'Card', 'Credit'].map((method) => (
+                     <button
+                       key={method}
+                       onClick={() => setPaymentMethod(method)}
+                       className={`flex flex-col items-center gap-2 py-3 rounded-xl border transition-all ${
+                         paymentMethod === method 
+                         ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg' 
+                         : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
+                       }`}
+                     >
+                       {method === 'Cash' && <Banknote size={16} />}
+                       {method === 'Card' && <CreditCard size={16} />}
+                       {method === 'Credit' && <Wallet size={16} />}
+                       <span className="text-[10px] font-bold uppercase">{method}</span>
+                     </button>
+                   ))}
+                </div>
+              </div>
+
+              <Button 
+                className="w-full h-16 text-lg tracking-wider rounded-2xl group" 
+                onClick={handleCheckout} 
+                isLoading={loading}
+                disabled={cart.length === 0}
+              >
+                AUTHORIZE CHECKOUT
+                <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+
+              <AnimatePresence>
+                {status.type && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className={`p-4 rounded-xl flex items-center gap-3 border ${
+                      status.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-500'
+                    }`}
+                  >
+                    {status.type === 'success' ? <CheckCircle2 size={24} className="shrink-0" /> : <AlertCircle size={24} className="shrink-0" />}
+                    <div className="text-sm font-medium">{status.message}</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
+
+const ChevronRight = ({ className, size = 20 }: { className?: string, size?: number }) => (
+  <ArrowRight className={className} size={size} />
+);
 
 export default SalesTerminal;
