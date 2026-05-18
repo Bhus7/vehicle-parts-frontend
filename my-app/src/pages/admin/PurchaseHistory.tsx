@@ -24,14 +24,13 @@ function PurchaseHistory() {
           setInvoices(res.data);
         } else if (res.data && Array.isArray(res.data.data)) {
           setInvoices(res.data.data);
+        } else {
+          setInvoices([]);
         }
       })
       .catch((err) => {
         console.error(err);
-        setInvoices([
-          { id: 101, vendorName: 'AutoParts Wholesale', partName: 'Brake Pads', quantity: 50, totalAmount: 1499.50, date: '2023-10-25' },
-          { id: 102, vendorName: 'Global Spares', partName: 'Oil Filter', quantity: 100, totalAmount: 1250.00, date: '2023-10-26' },
-        ]);
+        setInvoices([]);
       });
   }, []);
 

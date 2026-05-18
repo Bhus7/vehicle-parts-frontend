@@ -27,8 +27,9 @@ function Dashboard() {
   const [stats, setStats] = useState({
     staffCount: 0,
     customerCount: 0,
-    revenue: '$12,890', // Mocked since no endpoint exists
-    sales: '$45,231'    // Mocked since no endpoint exists
+    ordersCount: 0,
+    revenue: '$0',
+    sales: '$0'
   });
 
   useEffect(() => {
@@ -45,6 +46,26 @@ function Dashboard() {
       .then(res => {
         if (Array.isArray(res.data)) {
           setStats(prev => ({ ...prev, customerCount: res.data.length }));
+        }
+      }).catch(() => {});
+
+    // Fetch Orders/Appointments Count
+    api.get('/Appointments/all')
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setStats(prev => ({ ...prev, ordersCount: res.data.length }));
+        }
+      }).catch(() => {});
+
+    // Fetch Sales & Revenue Stats
+    api.get('/SalesInvoices/stats')
+      .then(res => {
+        if (res.data) {
+          setStats(prev => ({
+            ...prev,
+            sales: `$${res.data.totalSales ? res.data.totalSales.toLocaleString() : 0}`,
+            revenue: `$${res.data.totalRevenue ? res.data.totalRevenue.toLocaleString() : 0}`
+          }));
         }
       }).catch(() => {});
   }, []);
@@ -71,7 +92,7 @@ function Dashboard() {
           <StatCard title="Total Customers" value={stats.customerCount.toString()} color="#34B1AA" progress={85} icon={<TrendingUp size={24} />} />
         </Box>
         <Box>
-          <StatCard title="New Orders" value="342" color="#E0B50F" progress={45} icon={<ShoppingCart size={24} />} />
+          <StatCard title="New Orders" value={stats.ordersCount.toString()} color="#E0B50F" progress={45} icon={<ShoppingCart size={24} />} />
         </Box>
       </Box>
 

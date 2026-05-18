@@ -17,13 +17,9 @@ function NewPurchaseOrder() {
 
   useEffect(() => {
     // Fetch Vendors
-    api.get('/Vendors').then((res) => setVendors(res.data)).catch(() => {
-      setVendors([{ id: 1, companyName: 'AutoParts Wholesale' }]);
-    });
+    api.get('/Vendors').then((res) => setVendors(res.data)).catch(() => setVendors([]));
     // Fetch Parts
-    api.get('/Parts').then((res) => setParts(res.data)).catch(() => {
-      setParts([{ id: 1, partName: 'Brake Pads' }]);
-    });
+    api.get('/Parts').then((res) => setParts(res.data)).catch(() => setParts([]));
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -37,10 +33,13 @@ function NewPurchaseOrder() {
     };
     
     api.post('/PurchaseInvoices', payload)
-      .then(() => alert('Purchase Invoice Created Successfully!'))
+      .then(() => {
+        alert('Purchase Invoice Created Successfully!');
+        setQuantity('');
+        setUnitPrice('');
+      })
       .catch((err) => {
-        console.error(err);
-        alert('Created successfully! (Mocked due to API failure)');
+        alert(err.response?.data?.message || 'Failed to create purchase invoice.');
       });
   };
 
