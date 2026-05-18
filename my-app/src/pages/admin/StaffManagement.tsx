@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem as MuiMenuItem } from '@mui/material';
-import { Plus, Save, X } from 'lucide-react';
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { Plus, Save, X, Edit, Trash2 } from 'lucide-react';
 import api from '../../api/axiosConfig';
 
 interface Staff {
@@ -16,9 +16,38 @@ interface Staff {
 
 function StaffManagement() {
   const [staff, setStaff] = useState<Staff[]>([]);
+  
+  // Register Modal State
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({ fullName: '', email: '', phone: '', address: '', password: '' });
 
+  // Edit Modal State
+  const [editOpen, setEditOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({ fullName: '', phone: '', address: '' });
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  const fetchStaff = () => {
+    api.get('/Staff')
+      .then((res) => {
+        if (res.data && res.data.success && Array.isArray(res.data.data)) {
+          setStaff(res.data.data);
+        } else if (Array.isArray(res.data)) {
+          setStaff(res.data);
+        } else {
+          setStaff([]);
+        }
+      })
+      .catch((err) => {
+        console.error("API Error:", err);
+        setStaff([]);
+      });
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  // Register Handlers
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
@@ -31,12 +60,7 @@ function StaffManagement() {
       .then((res) => {
         alert(res.data.message || 'Staff Registered Successfully!');
         handleClose();
-        // Refresh list
-        api.get('/Staff').then(res => {
-          if (res.data.success) {
-            setStaff(res.data.data);
-          }
-        }).catch(() => {});
+        fetchStaff();
       })
       .catch((err) => {
         const errorMsg = err.response?.data?.message || 'Failed to register staff.';
@@ -44,25 +68,49 @@ function StaffManagement() {
       });
   };
 
-  useEffect(() => {
-    // Attempting to fetch staff from standard endpoint
-    api.get('/Staff')
-      .then((res) => {
-        if (res.data && res.data.success && Array.isArray(res.data.data)) {
-          setStaff(res.data.data);
-        } else if (Array.isArray(res.data)) {
-          setStaff(res.data);
-        }
+  // Edit Handlers
+  const handleEditOpen = (s: Staff) => {
+    setSelectedUserId(s.userID);
+    setEditFormData({ fullName: s.fullName, phone: s.phone, address: s.address });
+    setEditOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setEditOpen(false);
+    setSelectedUserId(null);
+    setEditFormData({ fullName: '', phone: '', address: '' });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedUserId === null) return;
+
+    api.put(`/Staff/${selectedUserId}`, editFormData)
+      .then(() => {
+        alert('Staff Updated Successfully!');
+        handleEditClose();
+        fetchStaff();
       })
       .catch((err) => {
-        console.error("API Error:", err);
-        setStaff([
-          { userID: 1, fullName: 'Admin User', email: 'admin@system.com', phone: '555-0199', address: 'Main Office', status: 'Active', roleID: 1, roleName: 'ADMIN' },
-          { userID: 2, fullName: 'Warehouse Manager', email: 'manager@system.com', phone: '555-0188', address: 'Warehouse A', status: 'Active', roleID: 2, roleName: 'STAFF' },
-        ]);
+        const errorMsg = err.response?.data?.message || 'Failed to update staff.';
+        alert(errorMsg);
       });
-  }, []);
+  };
 
+  // Delete Handler
+  const handleDelete = (id: number) => {
+    if (window.confirm('Are you sure you want to delete this staff member?')) {
+      api.delete(`/Staff/${id}`)
+        .then(() => {
+          alert('Staff Deleted Successfully!');
+          fetchStaff();
+        })
+        .catch((err) => {
+          const errorMsg = err.response?.data?.message || 'Failed to delete staff.';
+          alert(errorMsg);
+        });
+    }
+  };
 
   return (
     <Box>
@@ -87,37 +135,27 @@ function StaffManagement() {
           <DialogContent dividers>
             <Box sx={{ display: 'grid', gap: 2, pt: 1 }}>
               <TextField
-                label="Full Name"
-                fullWidth
-                required
+                label="Full Name" fullWidth required
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
               />
               <TextField
-                label="Email Address"
-                type="email"
-                fullWidth
-                required
+                label="Email Address" type="email" fullWidth required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
               <TextField
-                label="Phone"
-                fullWidth
+                label="Phone" fullWidth
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               />
               <TextField
-                label="Address"
-                fullWidth
+                label="Address" fullWidth
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               />
               <TextField
-                label="Password"
-                type="password"
-                fullWidth
-                required
+                label="Password" type="password" fullWidth required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
@@ -132,10 +170,43 @@ function StaffManagement() {
         </form>
       </Dialog>
 
+      {/* Edit Staff Dialog */}
+      <Dialog open={editOpen} onClose={handleEditClose} fullWidth maxWidth="xs">
+        <form onSubmit={handleEditSubmit}>
+          <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Staff Details</DialogTitle>
+          <DialogContent dividers>
+            <Box sx={{ display: 'grid', gap: 2, pt: 1 }}>
+              <TextField
+                label="Full Name" fullWidth required
+                value={editFormData.fullName}
+                onChange={(e) => setEditFormData({ ...editFormData, fullName: e.target.value })}
+              />
+              <TextField
+                label="Phone" fullWidth
+                value={editFormData.phone}
+                onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+              />
+              <TextField
+                label="Address" fullWidth
+                value={editFormData.address}
+                onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ p: 3 }}>
+            <Button onClick={handleEditClose} startIcon={<X size={18} />}>Cancel</Button>
+            <Button type="submit" variant="contained" startIcon={<Save size={18} />} sx={{ color: '#fff' }}>
+              Update Staff
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
       <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
         <Table>
           <TableHead sx={{ bgcolor: '#f7f8fa' }}>
             <TableRow>
+              <TableCell sx={{ fontWeight: 'bold' }}>User ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Phone</TableCell>
@@ -147,6 +218,7 @@ function StaffManagement() {
           <TableBody>
             {Array.isArray(staff) && staff.map((s) => (
               <TableRow key={s.userID} hover>
+                <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>#{s.userID}</TableCell>
                 <TableCell>{s.fullName}</TableCell>
                 <TableCell>{s.email}</TableCell>
                 <TableCell>{s.phone}</TableCell>
@@ -160,7 +232,12 @@ function StaffManagement() {
                   />
                 </TableCell>
                 <TableCell>
-                  <Button size="small" color="secondary">Edit</Button>
+                  <Button size="small" color="secondary" onClick={() => handleEditOpen(s)} startIcon={<Edit size={16} />} sx={{ mr: 1 }}>
+                    Edit
+                  </Button>
+                  <Button size="small" color="error" onClick={() => handleDelete(s.userID)} startIcon={<Trash2 size={16} />}>
+                    Delete
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
