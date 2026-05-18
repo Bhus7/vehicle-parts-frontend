@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
 import api from '../../api/axiosConfig';
 
@@ -66,7 +66,7 @@ function PurchaseHistory() {
                 <TableCell>{inv.vendorName || `Vendor ${inv.vendorId}`}</TableCell>
                 <TableCell>{inv.partName || `Part ${inv.partId}`}</TableCell>
                 <TableCell>{inv.quantity}</TableCell>
-                <TableCell>${inv.totalAmount?.toFixed(2) || (inv.quantity * inv.unitPrice).toFixed(2)}</TableCell>
+                <TableCell>${inv.totalAmount?.toFixed(2) || (inv.quantity * (inv.unitPrice ?? 0)).toFixed(2)}</TableCell>
                 <TableCell>
                   <Button size="small" color="primary">View Details</Button>
                 </TableCell>

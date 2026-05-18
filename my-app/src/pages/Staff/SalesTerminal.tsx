@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Search, Plus, Minus, Trash2, CheckCircle2, AlertCircle, Package, ArrowRight, CreditCard, Wallet, Banknote, User as UserIcon } from 'lucide-react';
 import { staffApi } from '../../api/api';
-import { Link } from 'react-router-dom';
 import { Button, Card, Input } from '../../components/ui-components';
 
 interface Part {
