@@ -7,6 +7,7 @@ import { Card, Button } from '../../components/ui-components';
 const Reports = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   useEffect(() => {
     loadReports();
@@ -20,6 +21,84 @@ const Reports = () => {
       console.error('Failed to load reports');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSavePDF = () => {
+    const element = document.getElementById('print-dossier');
+    if (!element) return;
+
+    const runExport = () => {
+      const opt = {
+        margin:       0.5,
+        filename:     `AutoParts_Performance_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      
+      // @ts-ignore
+      window.html2pdf().from(element).set(opt).save();
+    };
+
+    // @ts-ignore
+    if (window.html2pdf) {
+      runExport();
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      script.onload = runExport;
+      document.body.appendChild(script);
+    }
+  };
+
+  const getRiskStatus = (dueDateStr: string | null) => {
+    if (!dueDateStr) {
+      return { 
+        label: 'PENDING', 
+        className: 'bg-amber-500/10 text-amber-400 border border-amber-500/20' 
+      };
+    }
+    const dueDate = new Date(dueDateStr);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    dueDate.setHours(0,0,0,0);
+    
+    if (today > dueDate) {
+      return { 
+        label: 'OVERDUE', 
+        className: 'bg-rose-500/10 text-rose-400 border border-rose-500/20' 
+      };
+    } else {
+      return { 
+        label: 'DUE', 
+        className: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' 
+      };
+    }
+  };
+
+  const getPrintRiskStatus = (dueDateStr: string | null) => {
+    if (!dueDateStr) {
+      return { 
+        label: 'PENDING', 
+        className: 'bg-amber-50 text-amber-700 border border-amber-200' 
+      };
+    }
+    const dueDate = new Date(dueDateStr);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    dueDate.setHours(0,0,0,0);
+    
+    if (today > dueDate) {
+      return { 
+        label: 'OVERDUE', 
+        className: 'bg-rose-50 text-rose-700 border border-rose-200' 
+      };
+    } else {
+      return { 
+        label: 'DUE', 
+        className: 'bg-indigo-50 text-indigo-700 border border-indigo-200' 
+      };
     }
   };
 
@@ -59,7 +138,7 @@ const Reports = () => {
           <p className="text-slate-400">Deep-dive into high-value accounts and collection risks.</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2 border-indigo-500/20 text-indigo-400">
+          <Button variant="outline" className="gap-2 border-indigo-500/20 text-indigo-400" onClick={() => setShowPrintPreview(true)}>
             <Download size={18} />
             Export PDF
           </Button>
@@ -100,7 +179,7 @@ const Reports = () => {
                     <p className="text-[10px] text-slate-500 font-mono">UID: {user.userID}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black text-emerald-400">${user.totalSpent.toLocaleString()}</p>
+                    <p className="text-sm font-black text-emerald-400">Rs. {user.totalSpent.toLocaleString()}</p>
                     <p className="text-[10px] text-slate-600 uppercase font-black tracking-tighter">Certified VIP</p>
                   </div>
                 </div>
@@ -170,7 +249,6 @@ const Reports = () => {
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Invoice Ref</th>
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Beneficiary</th>
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Amount Due</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Maturity Date</th>
                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Risk Status</th>
                   </tr>
                 </thead>
@@ -188,23 +266,18 @@ const Reports = () => {
                            <span className="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">{p.customerName}</span>
                         </td>
                         <td className="px-8 py-6">
-                           <span className="text-sm font-black text-rose-400">${p.finalAmount.toFixed(2)}</span>
+                           <span className="text-sm font-black text-rose-400">Rs. {p.finalAmount.toFixed(2)}</span>
                         </td>
                         <td className="px-8 py-6">
-                           <span className="text-xs font-medium text-slate-500 italic">
-                             {p.dueDate ? new Date(p.dueDate).toLocaleDateString() : 'IMMEDIATE'}
-                           </span>
-                        </td>
-                        <td className="px-8 py-6">
-                           <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter bg-rose-500/10 text-rose-500 border border-rose-500/20">
-                             OVERDUE
+                           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${getRiskStatus(p.dueDate).className}`}>
+                             {getRiskStatus(p.dueDate).label}
                            </span>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="px-8 py-20 text-center">
+                      <td colSpan={4} className="px-8 py-20 text-center">
                         <div className="flex flex-col items-center gap-4">
                           <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
                              <BarChart2 size={32} />
@@ -220,6 +293,181 @@ const Reports = () => {
           </Card>
         </motion.div>
       </div>
+
+      {/* High-Fidelity Print Preview Overlay Modal */}
+      {showPrintPreview && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-8 no-print">
+          {/* Inject Dynamic Print-Only CSS safeguarding background styles and visibility */}
+          <style dangerouslySetInnerHTML={{__html: `
+            @media print {
+              body * {
+                visibility: hidden !important;
+              }
+              #print-dossier, #print-dossier * {
+                visibility: visible !important;
+              }
+              #print-dossier {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                background: white !important;
+                color: #0f172a !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 1.5in 0.5in 0.5in 0.5in !important;
+              }
+              .no-print {
+                display: none !important;
+              }
+            }
+          `}} />
+
+          <div className="max-w-4xl w-full bg-slate-900 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            {/* Modal Control Dashboard */}
+            <div className="p-6 border-b border-white/5 bg-white/[0.02] flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-black text-white font-outfit uppercase tracking-wider">Report Print Center</h3>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Verify layout formatting before committing to physical dossier print.</p>
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setShowPrintPreview(false)}
+                  className="bg-white/5 text-white hover:bg-white/10 border-none text-xs px-4 py-2"
+                >
+                  Close Preview
+                </Button>
+                <Button 
+                  variant="primary" 
+                  onClick={handleSavePDF}
+                  className="gap-2 text-xs px-5 py-2 font-black shadow-lg shadow-indigo-500/20"
+                >
+                  <Download size={14} />
+                  Save as PDF
+                </Button>
+              </div>
+            </div>
+
+            {/* Print Area Preview Sheet */}
+            <div className="flex-1 overflow-y-auto p-8 bg-slate-950/50 flex justify-center">
+              <div 
+                id="print-dossier" 
+                className="w-[8.5in] min-h-[11in] bg-white text-slate-900 p-12 shadow-xl border border-slate-200 rounded-2xl flex flex-col justify-between"
+              >
+                <div>
+                  {/* Print Document Header */}
+                  <div className="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-8">
+                    <div>
+                      <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">AutoParts Enterprise</h1>
+                      <p className="text-xs font-black text-slate-500 tracking-[0.2em] uppercase mt-1">Intelligence Division</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="px-3 py-1 rounded bg-slate-900 text-white text-[9px] font-black tracking-widest uppercase">Verified Dossier</span>
+                      <p className="text-[9px] font-mono text-slate-500 mt-2">GEN: {new Date().toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {/* Document Purpose Summary */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-8">
+                    <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider mb-2">Performance Audit Summary</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                      This formal business dossier compiles recent life-cycle spending profiles, client retention sessions, and current accounts receivable collection risks directly extracted from the enterprise core nodes. Authorized staff access only.
+                    </p>
+                  </div>
+
+                  {/* High Spenders List Section */}
+                  <div className="mb-8">
+                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-3 pb-1 border-b border-slate-200">1. High Lifecycle Revenue Spenders</h3>
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-300 text-slate-500 font-bold uppercase">
+                          <th className="py-2">Rank</th>
+                          <th className="py-2">UID Reference</th>
+                          <th className="py-2">Client Full Name</th>
+                          <th className="py-2 text-right">Lifecycle Spent</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {data?.highSpenders.map((user: any, idx: number) => (
+                          <tr key={user.userID} className="font-medium text-slate-700">
+                            <td className="py-2.5 font-bold">#{idx + 1}</td>
+                            <td className="py-2.5 font-mono text-[10px]">USR-0{user.userID}</td>
+                            <td className="py-2.5 font-bold text-slate-900">{user.fullName}</td>
+                            <td className="py-2.5 text-right font-black text-slate-900">Rs. {user.totalSpent.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Regular Spenders Section */}
+                  <div className="mb-8">
+                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-3 pb-1 border-b border-slate-200">2. Top Engagement Frequency</h3>
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-300 text-slate-500 font-bold uppercase">
+                          <th className="py-2">Rank</th>
+                          <th className="py-2">UID Reference</th>
+                          <th className="py-2">Client Full Name</th>
+                          <th className="py-2 text-right">Engagement Sessions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {data?.regulars.map((user: any, idx: number) => (
+                          <tr key={user.userID} className="font-medium text-slate-700">
+                            <td className="py-2.5 font-bold">#{idx + 1}</td>
+                            <td className="py-2.5 font-mono text-[10px]">USR-0{user.userID}</td>
+                            <td className="py-2.5 font-bold text-slate-900">{user.fullName}</td>
+                            <td className="py-2.5 text-right font-black text-slate-900">{user.visitCount} Completed Visits</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pending Collections Section */}
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-3 pb-1 border-b border-slate-200">3. Outstanding Credit Ledger</h3>
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-300 text-slate-500 font-bold uppercase">
+                          <th className="py-2">Invoice Ref</th>
+                          <th className="py-2">Beneficiary</th>
+                          <th className="py-2 text-right">Outstanding due</th>
+                          <th className="py-2 text-right">Risk Assessment</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {data?.pendingPayments.length > 0 ? (
+                          data.pendingPayments.map((p: any) => (
+                            <tr key={p.salesInvoiceID} className="font-medium text-slate-700">
+                              <td className="py-2.5 font-mono text-[10px]">#INV-0{p.salesInvoiceID}</td>
+                              <td className="py-2.5 font-bold text-slate-900">{p.customerName}</td>
+                              <td className="py-2.5 text-right font-black text-slate-900">Rs. {p.finalAmount.toFixed(2)}</td>
+                              <td className="py-2.5 text-right"><span className={`text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded ${getPrintRiskStatus(p.dueDate).className}`}>{getPrintRiskStatus(p.dueDate).label}</span></td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={4} className="py-6 text-center text-slate-400 italic">No credit risks detected. Ledger is fully settled.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Footer and Security Seal */}
+                <div className="border-t border-slate-200 pt-6 mt-8 flex justify-between items-center text-[9px] font-mono text-slate-400">
+                  <p>SECRET // ENTERPRISE DATA CLASSIFIED</p>
+                  <p>AUDIT SIGNATURE STAMPED</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

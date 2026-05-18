@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, DollarSign, Calendar, AlertTriangle, ArrowRight, TrendingUp, Zap, ChevronRight, Bell, Activity } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { staffApi } from '../../api/api';
 import { Card, Button } from '../../components/ui-components';
 
 const StaffDashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +51,7 @@ const StaffDashboard = () => {
 
   const statCards = [
     { label: 'Total Customers', value: stats?.totalCustomers, icon: Users, color: 'indigo', trend: '+12.5%' },
-    { label: 'Revenue Generated', value: `$${stats?.totalSales.toFixed(2)}`, icon: DollarSign, color: 'emerald', trend: '+8.2%' },
+    { label: 'Revenue Generated', value: `Rs. ${stats?.totalSales.toFixed(2)}`, icon: DollarSign, color: 'emerald', trend: '+8.2%' },
     { label: 'Active Service', value: stats?.pendingAppointments, icon: Calendar, color: 'amber', trend: '-2.4%' },
     { label: 'Inventory Alerts', value: stats?.lowStockAlerts, icon: AlertTriangle, color: 'rose', trend: 'Critical' },
   ];
@@ -130,30 +131,41 @@ const StaffDashboard = () => {
                    </tr>
                  </thead>
                  <tbody className="divide-y divide-white/5">
-                   {[
-                     { id: '#4421', event: 'Parts Checkout', user: 'Binayak S.', status: 'Completed', time: '12m ago', color: 'emerald' },
-                     { id: '#4420', event: 'Stock Inbound', user: 'Oil Filter XL', status: 'Pending', time: '28m ago', color: 'amber' },
-                     { id: '#4419', event: 'User Onboarding', user: 'Samyog J.', status: 'Authorized', time: '1h ago', color: 'indigo' },
-                     { id: '#4418', event: 'Invoice Audit', user: 'Internal Rev', status: 'Flagged', time: '4h ago', color: 'rose' },
-                   ].map((row, i) => (
-                     <tr key={i} className="hover:bg-white/[0.02] transition-colors group cursor-pointer">
-                        <td className="px-6 py-4">
-                           <p className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">{row.event}</p>
-                           <p className="text-[10px] text-slate-600 font-mono">{row.id}</p>
+                    {stats?.recentSales && stats.recentSales.length > 0 ? (
+                      stats.recentSales.map((sale: any) => (
+                        <tr 
+                          key={sale.salesInvoiceID} 
+                          onClick={() => navigate(`/staff/invoice/${sale.salesInvoiceID}`)}
+                          className="hover:bg-white/[0.02] transition-colors group cursor-pointer"
+                        >
+                           <td className="px-6 py-4">
+                              <p className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">Sales Invoice</p>
+                              <p className="text-[10px] text-slate-600 font-mono">#{sale.salesInvoiceID}</p>
+                           </td>
+                           <td className="px-6 py-4">
+                              <span className="text-xs font-medium text-slate-400">{sale.customerName}</span>
+                           </td>
+                           <td className="px-6 py-4">
+                              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
+                                sale.paymentStatus.toLowerCase() === 'paid'
+                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                              }`}>
+                                {sale.paymentStatus}
+                              </span>
+                           </td>
+                           <td className="px-6 py-4">
+                              <span className="text-xs font-mono text-slate-500">{new Date(sale.salesDate).toLocaleDateString()}</span>
+                           </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-12 text-center text-slate-500 italic">
+                          No recent sales transactions recorded.
                         </td>
-                        <td className="px-6 py-4">
-                           <span className="text-xs font-medium text-slate-400">{row.user}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter bg-${row.color}-500/10 text-${row.color}-400 border border-${row.color}-500/20`}>
-                             {row.status}
-                           </span>
-                        </td>
-                        <td className="px-6 py-4">
-                           <span className="text-xs font-mono text-slate-500">{row.time}</span>
-                        </td>
-                     </tr>
-                   ))}
+                      </tr>
+                    )}
                  </tbody>
               </table>
             </div>

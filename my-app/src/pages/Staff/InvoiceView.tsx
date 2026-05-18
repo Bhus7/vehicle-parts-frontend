@@ -31,13 +31,19 @@ const InvoiceView = () => {
     window.print();
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
+    try {
+      await staffApi.sendInvoiceEmail(parseInt(id!));
       setSent(true);
       setTimeout(() => setSent(false), 3000);
-    }, 1500);
+    } catch (error: any) {
+      console.error('Failed to send email:', error);
+      const backendError = error.response?.data?.message || error.response?.data || error.message;
+      alert(`Email dispatch failed: ${backendError}`);
+    } finally {
+      setSending(false);
+    }
   };
 
   if (loading) return (
@@ -170,8 +176,8 @@ const InvoiceView = () => {
                     <tr key={idx} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="px-8 py-5 font-bold text-slate-800 text-sm">{item.partName}</td>
                       <td className="px-8 py-5 text-center font-black text-slate-500 text-sm">{item.quantity}</td>
-                      <td className="px-8 py-5 text-right font-bold text-slate-500 text-sm">${item.unitPrice.toFixed(2)}</td>
-                      <td className="px-8 py-5 text-right font-black text-slate-900 text-sm">${item.subtotal.toFixed(2)}</td>
+                      <td className="px-8 py-5 text-right font-bold text-slate-500 text-sm">Rs. {item.unitPrice.toFixed(2)}</td>
+                      <td className="px-8 py-5 text-right font-black text-slate-900 text-sm">Rs. {item.subtotal.toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -199,24 +205,23 @@ const InvoiceView = () => {
               <div className="w-full md:w-[320px] space-y-4">
                 <div className="flex justify-between items-center text-sm font-bold text-slate-500">
                   <span className="uppercase tracking-widest text-[10px]">Net Value</span>
-                  <span>${invoice.totalAmount.toFixed(2)}</span>
+                  <span>Rs. {invoice.totalAmount.toFixed(2)}</span>
                 </div>
                 {invoice.discountAmount > 0 && (
                   <div className="flex justify-between items-center text-sm font-bold text-emerald-600">
                     <span className="uppercase tracking-widest text-[10px]">Loyalty Offset (10%)</span>
-                    <span>-${invoice.discountAmount.toFixed(2)}</span>
+                    <span>-Rs. {invoice.discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="pt-4 border-t-2 border-slate-100 flex justify-between items-end">
                    <div className="space-y-1">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Settlement Total</p>
-                      <p className="text-sm font-bold text-slate-500 uppercase">USD VALUATION</p>
+                      <p className="text-sm font-bold text-slate-500 uppercase">NPR VALUATION</p>
                    </div>
-                   <h2 className="text-4xl font-black tracking-tighter text-indigo-600">${invoice.finalAmount.toFixed(2)}</h2>
+                   <h2 className="text-4xl font-black tracking-tighter text-indigo-600">Rs. {invoice.finalAmount.toFixed(2)}</h2>
                 </div>
                 <div className="pt-8 text-center md:text-right">
-                   <p className="text-[8px] font-mono text-slate-300 uppercase leading-none mb-1">Signed-by: Antigravity-Core-v4</p>
-                   <p className="text-[8px] font-mono text-slate-300 uppercase tracking-widest">TS: {new Date().toISOString()}</p>
+                   <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">TS: {new Date(invoice.salesDate).toLocaleString('en-US')}</p>
                 </div>
               </div>
             </div>

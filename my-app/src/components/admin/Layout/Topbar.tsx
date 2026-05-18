@@ -50,7 +50,7 @@ function Topbar() {
           anchorEl={notifAnchorEl}
           open={Boolean(notifAnchorEl)}
           onClose={handleNotifClose}
-          PaperProps={{ sx: { width: 320, mt: 1.5, borderRadius: 2, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' } }}
+          slotProps={{ paper: { sx: { width: 320, mt: 1.5, borderRadius: 2, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' } } }}
         >
           <Box sx={{ px: 2, py: 1.5, fontWeight: 'bold', borderBottom: `1px solid ${theme.palette.divider}` }}>
             Notifications

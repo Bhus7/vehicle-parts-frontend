@@ -220,7 +220,7 @@ const CustomerDetails = () => {
                                        {item.status}
                                     </span>
                                   ) : (
-                                    <p className="text-lg font-black text-white tracking-tighter">${item.finalAmount.toFixed(2)}</p>
+                                    <p className="text-lg font-black text-white tracking-tighter">Rs. {item.finalAmount.toFixed(2)}</p>
                                   )}
                                </div>
                             </div>
