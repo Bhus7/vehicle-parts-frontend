@@ -115,20 +115,20 @@ const CustomerSearch = () => {
                     {results.map((customer) => (
                       <motion.tr 
                         variants={rowVariants}
-                        key={customer.userID} 
+                        key={customer.userID || customer.UserID} 
                         className="group hover:bg-slate-50/50 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/staff/customer/${customer.userID}`)}
+                        onClick={() => navigate(`/staff/customer/${customer.userID || customer.UserID}`)}
                       >
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-semibold text-base">
-                              {customer.fullName[0].toUpperCase()}
+                              {(customer.fullName || customer.FullName || "C")[0].toUpperCase()}
                             </div>
                             <div>
-                               <p className="font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">{customer.fullName}</p>
+                               <p className="font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">{customer.fullName || customer.FullName}</p>
                                <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono mt-0.5">
                                  <Hash size={10} />
-                                 <span>ID: {customer.userID}</span>
+                                 <span>ID: {customer.userID || customer.UserID}</span>
                                </div>
                             </div>
                           </div>
@@ -137,18 +137,18 @@ const CustomerSearch = () => {
                            <div className="space-y-1 text-sm">
                              <div className="flex items-center gap-2 text-slate-700 font-medium">
                                <Phone size={12} className="text-slate-400" />
-                               {customer.phone}
+                               {customer.phone || customer.Phone}
                              </div>
                              <div className="flex items-center gap-2 text-slate-400 text-xs font-mono">
                                <Mail size={12} />
-                               {customer.email}
+                               {customer.email || customer.Email}
                              </div>
                            </div>
                         </td>
                         <td className="px-6 py-5">
                            <div className="flex flex-wrap gap-1.5">
-                             {customer.vehicles && customer.vehicles.length > 0 ? (
-                               customer.vehicles.map((v: string) => (
+                             {(customer.vehicles || customer.Vehicles) && (customer.vehicles || customer.Vehicles).length > 0 ? (
+                               (customer.vehicles || customer.Vehicles).map((v: string) => (
                                 <span key={v} className="px-2.5 py-0.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600 flex items-center gap-1.5 group-hover:border-indigo-200 transition-colors">
                                   <Car size={11} className="text-indigo-500" /> {v}
                                 </span>

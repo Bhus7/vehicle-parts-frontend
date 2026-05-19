@@ -94,8 +94,8 @@ const CustomerDashboard = () => {
       <div className="bg-gradient-to-br from-blue-600/20 to-violet-600/10 border border-blue-500/20 rounded-2xl p-6 flex items-center justify-between">
         <div>
           <p className="text-blue-400 text-sm font-bold uppercase tracking-widest mb-1">Welcome back</p>
-          <h1 className="text-2xl font-black text-white">{profile?.fullName} 👋</h1>
-          <p className="text-slate-400 text-sm mt-1">{profile?.email} · {profile?.phone}</p>
+          <h1 className="text-2xl font-black text-white">{profile?.fullName || (profile as any)?.FullName} 👋</h1>
+          <p className="text-slate-400 text-sm mt-1">{profile?.email || (profile as any)?.Email} · {profile?.phone || (profile as any)?.Phone}</p>
         </div>
         <Link
           to="/customer/profile"
@@ -108,7 +108,7 @@ const CustomerDashboard = () => {
       {/* ── Stats Row ─────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Vehicles',      value: profile?.vehicles?.length ?? 0, icon: Car,          color: 'text-blue-400'   },
+          { label: 'Vehicles',      value: (profile?.vehicles || (profile as any)?.Vehicles)?.length ?? 0, icon: Car,          color: 'text-blue-400'   },
           { label: 'Appointments',  value: '—',                            icon: CalendarCheck, color: 'text-violet-400' },
           { label: 'Part Requests', value: '—',                            icon: Package,       color: 'text-emerald-400'},
           { label: 'Reviews',       value: '—',                            icon: Star,          color: 'text-amber-400'  },
@@ -156,7 +156,7 @@ const CustomerDashboard = () => {
           </Link>
         </div>
 
-        {(!profile?.vehicles || profile.vehicles.length === 0) ? (
+        {(!(profile?.vehicles || (profile as any)?.Vehicles) || (profile?.vehicles || (profile as any)?.Vehicles).length === 0) ? (
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 text-center text-slate-500">
             <Car size={36} className="mx-auto mb-3 text-slate-700" />
             <p className="font-bold text-white">No vehicles registered</p>
@@ -164,21 +164,21 @@ const CustomerDashboard = () => {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {profile.vehicles.map((v) => (
-              <div key={v.vehicleID} className="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-blue-500/30 transition-colors">
+            {(profile?.vehicles || (profile as any)?.Vehicles).map((v: any) => (
+              <div key={v.vehicleID || v.VehicleID} className="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-blue-500/30 transition-colors">
                 <div className="flex items-start justify-between mb-3">
                   <div className="w-9 h-9 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
                     <Car size={16} className="text-blue-400" />
                   </div>
                   <span className="text-xs font-bold bg-slate-700 text-slate-300 px-2 py-1 rounded-lg">
-                    {v.vehicleType}
+                    {v.vehicleType || v.VehicleType}
                   </span>
                 </div>
-                <h3 className="font-black text-white text-base">{v.brand} {v.model}</h3>
-                <p className="text-slate-400 text-xs mt-1">{v.vehicleNumber} · {v.year}</p>
-                {v.conditionNotes && (
-                  <p className="text-slate-500 text-xs mt-2 truncate" title={v.conditionNotes}>
-                    📝 {v.conditionNotes}
+                <h3 className="font-black text-white text-base">{v.brand || v.Brand} {v.model || v.Model}</h3>
+                <p className="text-slate-400 text-xs mt-1">{v.vehicleNumber || v.VehicleNumber} · {v.year || v.Year}</p>
+                {(v.conditionNotes || v.ConditionNotes) && (
+                  <p className="text-slate-500 text-xs mt-2 truncate" title={v.conditionNotes || v.ConditionNotes}>
+                    📝 {v.conditionNotes || v.ConditionNotes}
                   </p>
                 )}
               </div>

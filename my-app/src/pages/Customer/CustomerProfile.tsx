@@ -407,7 +407,7 @@ const CustomerProfile = () => {
         )}
 
         {/* Vehicles List */}
-        {(!profile?.vehicles || profile.vehicles.length === 0) ? (
+        {(!(profile?.vehicles || profile?.Vehicles) || (profile.vehicles || profile.Vehicles).length === 0) ? (
           <div className="bg-slate-800 border border-slate-700 rounded-2xl p-10 text-center">
             <Car size={36} className="mx-auto text-slate-700 mb-3" />
             <p className="font-bold text-white">No vehicles registered</p>
@@ -415,13 +415,13 @@ const CustomerProfile = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {profile.vehicles.map((v) => (
-              <div key={v.vehicleID}>
-                {editVehicleId === v.vehicleID ? (
+            {(profile.vehicles || profile.Vehicles).map((v: any) => (
+              <div key={v.vehicleID || v.VehicleID}>
+                {editVehicleId === (v.vehicleID || v.VehicleID) ? (
                   /* Inline edit form */
                   <div className="bg-slate-800 border border-blue-500/30 rounded-2xl p-6">
                     <h3 className="text-base font-bold text-white mb-4 pb-3 border-b border-slate-700 flex items-center gap-2">
-                      <Pencil size={14} className="text-blue-400" /> Editing: {v.brand} {v.model}
+                      <Pencil size={14} className="text-blue-400" /> Editing: {v.brand || v.Brand} {v.model || v.Model}
                     </h3>
                     <form onSubmit={handleUpdateVehicle} className="space-y-4">
                       <div className="grid sm:grid-cols-2 gap-4">
@@ -487,12 +487,12 @@ const CustomerProfile = () => {
                         <Car size={16} className="text-blue-400" />
                       </div>
                       <div>
-                        <p className="font-black text-white">{v.brand} {v.model}
-                          <span className="ml-2 text-xs font-bold bg-slate-700 text-slate-300 px-2 py-0.5 rounded-lg">{v.vehicleType}</span>
+                        <p className="font-black text-white">{v.brand || v.Brand} {v.model || v.Model}
+                          <span className="ml-2 text-xs font-bold bg-slate-700 text-slate-300 px-2 py-0.5 rounded-lg">{v.vehicleType || v.VehicleType}</span>
                         </p>
-                        <p className="text-slate-400 text-xs mt-0.5">{v.vehicleNumber} · {v.year}</p>
-                        {v.conditionNotes && (
-                          <p className="text-slate-500 text-xs mt-1 italic truncate max-w-sm">📝 {v.conditionNotes}</p>
+                        <p className="text-slate-400 text-xs mt-0.5">{v.vehicleNumber || v.VehicleNumber} · {v.year || v.Year}</p>
+                        {(v.conditionNotes || v.ConditionNotes) && (
+                          <p className="text-slate-500 text-xs mt-1 italic truncate max-w-sm">📝 {v.conditionNotes || v.ConditionNotes}</p>
                         )}
                       </div>
                     </div>
