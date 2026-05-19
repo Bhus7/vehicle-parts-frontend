@@ -1,14 +1,31 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import { authApi } from '../../api/customerApi';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const handleLogin = (e: React.FormEvent) => {
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/');
+    setError('');
+    setLoading(true);
+    try {
+      const response = await authApi.login({ email, password });
+      const customerData = response.data?.data || response.data;
+      localStorage.setItem('customer', JSON.stringify(customerData));
+      localStorage.setItem('customerId', customerData.userId?.toString() || customerData.userID?.toString() || customerData.UserID?.toString() || customerData.id?.toString() || '');
+      localStorage.setItem('token', customerData.token || customerData.Token || '');
+      navigate('/customer/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.response?.data || 'Invalid email or password. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,9 +39,14 @@ const Login = () => {
           <p className="text-slate-400 mt-2">Sign in to your AutoParts account</p>
         </div>
 
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 text-red-400 text-sm">
+            <AlertCircle size={18} />
+            <span>{typeof error === 'string' ? error : 'Login failed. Please try again.'}</span>
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-6">
-
-
           <div className="space-y-4">
             <div>
                <label className="block text-sm font-bold text-slate-400 mb-2">Email Address</label>
@@ -60,8 +82,12 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded flex items-center justify-center gap-2 transition-colors">
-            Sign In <ArrowRight size={18} />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Signing In...' : 'Sign In'} <ArrowRight size={18} />
           </button>
         </form>
 

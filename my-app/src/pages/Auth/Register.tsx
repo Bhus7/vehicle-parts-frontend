@@ -1,18 +1,68 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Car, ArrowRight } from 'lucide-react';
+import { User, Car, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
+import { authApi } from '../../api/customerApi';
 
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleRegister = (e: React.FormEvent) => {
+  // Form state for personal info
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [address, setAddress] = useState('');
+
+  // Form state for vehicle info
+  const [vehicleMake, setVehicleMake] = useState('');
+  const [vehicleModel, setVehicleModel] = useState('');
+  const [vehicleYear, setVehicleYear] = useState('');
+  const [plateNumber, setPlateNumber] = useState('');
+  const [vehicleType, setVehicleType] = useState('');
+  const [conditionNotes, setConditionNotes] = useState('');
+
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     setLoading(true);
-    setTimeout(() => {
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
       setLoading(false);
-      navigate('/login');
-    }, 1000);
+      return;
+    }
+
+    try {
+      const registerData: any = {
+        fullName: name,
+        email,
+        phone,
+        password,
+        confirmPassword,
+        address,
+        vehicleNumber: plateNumber,
+        brand: vehicleMake,
+        model: vehicleModel,
+        year: vehicleYear ? parseInt(vehicleYear) : 0,
+        vehicleType,
+        conditionNotes
+      };
+
+      await authApi.register(registerData);
+      setSuccess('Account created successfully! Redirecting to login...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.response?.data || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,6 +75,20 @@ const Register = () => {
           <p className="text-slate-400">Join AutoParts to easily manage your vehicles and orders.</p>
         </div>
 
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 text-red-400 text-sm">
+            <AlertCircle size={18} />
+            <span>{typeof error === 'string' ? error : 'Registration failed.'}</span>
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-center gap-3 text-green-400 text-sm">
+            <CheckCircle size={18} />
+            <span>{success}</span>
+          </div>
+        )}
+
         <form onSubmit={handleRegister} className="space-y-8">
           <div className="grid md:grid-cols-2 gap-8">
             
@@ -36,50 +100,77 @@ const Register = () => {
               
               <div>
                 <label className="block text-sm font-bold text-slate-400 mb-2">Full Name</label>
-                <input required type="text" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="John Doe" />
+                <input required type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="John Doe" />
               </div>
               
               <div>
                 <label className="block text-sm font-bold text-slate-400 mb-2">Email Address</label>
-                <input required type="email" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="john@example.com" />
+                <input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="john@example.com" />
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-slate-400 mb-2">Phone Number</label>
-                <input required type="tel" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="555-0198" />
+                <input required type="tel" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="555-0198" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Address</label>
+                <input type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="123 Main St, City" />
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
-                <input required type="password" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="••••••••" />
+                <input required type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="••••••••" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Confirm Password</label>
+                <input required type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="••••••••" />
               </div>
             </div>
 
             {/* Vehicle Details */}
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-white border-b border-slate-700 pb-2 flex items-center gap-2">
-                <Car size={18} className="text-blue-500" /> Primary Vehicle (Optional)
+                <Car size={18} className="text-blue-500" /> Primary Vehicle
               </h3>
               
               <div>
                 <label className="block text-sm font-bold text-slate-400 mb-2">Make / Brand</label>
-                <input type="text" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="Toyota" />
+                <input required type="text" value={vehicleMake} onChange={e => setVehicleMake(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="Toyota" />
               </div>
               
               <div>
                 <label className="block text-sm font-bold text-slate-400 mb-2">Model</label>
-                <input type="text" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="Camry" />
+                <input required type="text" value={vehicleModel} onChange={e => setVehicleModel(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="Camry" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-slate-400 mb-2">Year</label>
-                  <input type="number" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="2018" />
+                  <input required type="number" value={vehicleYear} onChange={e => setVehicleYear(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="2018" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-400 mb-2">Plate Number</label>
-                  <input type="text" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="XYZ-123" />
+                  <input required type="text" value={plateNumber} onChange={e => setPlateNumber(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="XYZ-123" />
                 </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Vehicle Type</label>
+                <select required value={vehicleType} onChange={e => setVehicleType(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none">
+                  <option value="">Select type</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="SUV">SUV</option>
+                  <option value="Truck">Truck</option>
+                  <option value="Motorcycle">Motorcycle</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Condition Notes</label>
+                <input type="text" value={conditionNotes} onChange={e => setConditionNotes(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="Any existing issues?" />
               </div>
             </div>
           </div>
