@@ -222,17 +222,17 @@ const SalesTerminal = () => {
               <div className="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-[250px] overflow-y-auto z-30 divide-y divide-slate-100">
                 {matchingCustomers.map((cust) => (
                   <button
-                    key={cust.userID}
+                    key={cust.userID || cust.UserID}
                     onClick={() => selectCustomer(cust)}
                     className="w-full text-left p-4 hover:bg-slate-50 flex flex-col gap-1 transition-colors text-slate-850 text-sm"
                   >
                     <div className="flex justify-between font-bold text-slate-800">
-                      <span>{cust.fullName}</span>
-                      <span className="text-indigo-600 text-xs">ID: {cust.userID}</span>
+                      <span>{cust.fullName || cust.FullName}</span>
+                      <span className="text-indigo-600 text-xs">ID: {cust.userID || cust.UserID}</span>
                     </div>
                     <div className="flex justify-between text-xs text-slate-500 mt-1">
-                      <span>Phone: {cust.phone || 'N/A'}</span>
-                      <span>Vehicles: {cust.vehicles?.join(', ') || 'N/A'}</span>
+                      <span>Phone: {cust.phone || cust.Phone || 'N/A'}</span>
+                      <span>Vehicles: {((cust.vehicles || cust.Vehicles) ? (cust.vehicles || cust.Vehicles).map((v: any) => typeof v === 'object' ? (v.vehicleNumber || v.VehicleNumber || '') : v).filter(Boolean).join(', ') : '') || 'N/A'}</span>
                     </div>
                   </button>
                 ))}
@@ -251,12 +251,17 @@ const SalesTerminal = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <UserIcon size={16} className="text-indigo-600" />
-                    <span className="font-bold text-slate-800 text-sm">{selectedCustomer.fullName}</span>
-                    <span className="text-[10px] bg-indigo-600 text-white font-bold px-2 py-0.5 rounded">ID: {selectedCustomer.userID}</span>
+                    <span className="font-bold text-slate-800 text-sm">{selectedCustomer.fullName || selectedCustomer.FullName}</span>
+                    <span className="text-[10px] bg-indigo-600 text-white font-bold px-2 py-0.5 rounded">ID: {selectedCustomer.userID || selectedCustomer.UserID}</span>
                   </div>
                   <div className="text-xs text-slate-500 mt-2 space-y-1">
-                    <p>Phone: {selectedCustomer.phone || 'N/A'}</p>
-                    <p>Vehicle: {selectedCustomer.vehicles?.[0] || 'N/A'}</p>
+                    <p>Phone: {selectedCustomer.phone || selectedCustomer.Phone || 'N/A'}</p>
+                    <p>Vehicle: {(() => {
+                      const list = selectedCustomer.vehicles || selectedCustomer.Vehicles;
+                      if (!list || !Array.isArray(list) || list.length === 0) return 'N/A';
+                      const v = list[0];
+                      return typeof v === 'object' ? (v.vehicleNumber || v.VehicleNumber || 'N/A') : v;
+                    })()}</p>
                   </div>
                 </div>
                 <button
@@ -569,9 +574,14 @@ const SalesTerminal = () => {
                 <div className="grid grid-cols-2 gap-6 text-xs">
                   <div>
                     <h3 className="font-bold text-slate-400 uppercase tracking-widest mb-2">Customer Info</h3>
-                    <p className="font-black text-sm">{selectedCustomer?.fullName || 'Walk-in Customer'}</p>
-                    <p className="text-slate-600 mt-1">Phone: {selectedCustomer?.phone || 'N/A'}</p>
-                    <p className="text-slate-600">Vehicle: {selectedCustomer?.vehicles?.[0] || 'N/A'}</p>
+                    <p className="font-black text-sm">{selectedCustomer?.fullName || selectedCustomer?.FullName || 'Walk-in Customer'}</p>
+                    <p className="text-slate-600 mt-1">Phone: {selectedCustomer?.phone || selectedCustomer?.Phone || 'N/A'}</p>
+                    <p className="text-slate-600">Vehicle: {(() => {
+                      const list = selectedCustomer?.vehicles || selectedCustomer?.Vehicles;
+                      if (!list || !Array.isArray(list) || list.length === 0) return 'N/A';
+                      const v = list[0];
+                      return typeof v === 'object' ? (v.vehicleNumber || v.VehicleNumber || 'N/A') : v;
+                    })()}</p>
                   </div>
                   <div className="text-right">
                     <h3 className="font-bold text-slate-400 uppercase tracking-widest mb-2">Transaction Details</h3>

@@ -77,8 +77,8 @@ const CustomerDetails = () => {
               </div>
             </div>
             
-            <h2 className="text-2xl font-black text-slate-800 mb-1 uppercase tracking-tight">{customer.fullName}</h2>
-            <p className="text-indigo-600 font-mono text-[10px] uppercase font-black tracking-[0.2em] mb-8">Customer ID: {customer.userID.toString().padStart(6, '0')}</p>
+            <h2 className="text-2xl font-black text-slate-800 mb-1 uppercase tracking-tight">{customer.fullName || customer.FullName}</h2>
+            <p className="text-indigo-600 font-mono text-[10px] uppercase font-black tracking-[0.2em] mb-8">Customer ID: {(customer.userID || customer.UserID || "").toString().padStart(6, '0')}</p>
             
             <div className="space-y-4 text-left border-t border-slate-100 pt-8">
               <div className="flex items-center gap-4 group">
@@ -87,7 +87,7 @@ const CustomerDetails = () => {
                 </div>
                 <div>
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</p>
-                   <p className="text-sm font-bold text-slate-800">{customer.email}</p>
+                   <p className="text-sm font-bold text-slate-800">{customer.email || customer.Email}</p>
                 </div>
               </div>
 
@@ -97,7 +97,7 @@ const CustomerDetails = () => {
                 </div>
                 <div>
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone Number</p>
-                   <p className="text-sm font-bold text-slate-800">{customer.phone}</p>
+                   <p className="text-sm font-bold text-slate-800">{customer.phone || customer.Phone}</p>
                 </div>
               </div>
 
@@ -107,7 +107,7 @@ const CustomerDetails = () => {
                 </div>
                 <div>
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address</p>
-                   <p className="text-sm font-bold text-slate-800">{customer.address}</p>
+                   <p className="text-sm font-bold text-slate-800">{customer.address || customer.Address}</p>
                 </div>
               </div>
             </div>
@@ -144,21 +144,41 @@ const CustomerDetails = () => {
                 exit={{ opacity: 0, x: -20 }}
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
               >
-                {customer.vehicles.map((v: any) => (
-                  <Card key={v.vehicleID} className="p-6 group border border-slate-200 hover:border-indigo-200 bg-white shadow-sm hover:shadow-md transition-all">
+                {(customer.vehicles || customer.Vehicles || []).map((v: any) => (
+                  <Card key={v.vehicleID || v.VehicleID} className="p-6 group border border-slate-200 hover:border-indigo-200 bg-white shadow-sm hover:shadow-md transition-all">
                     <div className="flex items-start justify-between mb-6">
                       <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100/50 flex items-center justify-center text-indigo-650 group-hover:scale-105 transition-transform">
                         <Car size={32} />
                       </div>
                       <span className="px-3 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-black uppercase tracking-widest">
-                         {v.vehicleType}
+                         {v.vehicleType || v.VehicleType || '—'}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-850 mb-1 uppercase italic tracking-tighter">{v.vehicleNumber}</h3>
-                    <p className="text-sm font-bold text-slate-500 mb-4">{v.brand} {v.model} • {v.year}</p>
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                       <span className="text-[10px] font-black text-slate-400 uppercase">Vehicle Info</span>
-                       <ChevronRight className="text-slate-400 group-hover:text-indigo-600 transition-colors" size={16} />
+                    <h3 className="text-xl font-bold text-slate-800 mb-1 uppercase italic tracking-tighter">{v.vehicleNumber || v.VehicleNumber}</h3>
+                    <p className="text-sm font-bold text-slate-500 mb-5">{v.brand || v.Brand} {v.model || v.Model} • {v.year || v.Year}</p>
+                    <div className="space-y-2.5 pt-4 border-t border-slate-100">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Brand</span>
+                        <span className="text-sm font-bold text-slate-700">{v.brand || v.Brand || '—'}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Model</span>
+                        <span className="text-sm font-bold text-slate-700">{v.model || v.Model || '—'}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Year</span>
+                        <span className="text-sm font-bold text-slate-700">{v.year || v.Year || '—'}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</span>
+                        <span className="text-sm font-bold text-slate-700">{v.vehicleType || v.VehicleType || '—'}</span>
+                      </div>
+                      {(v.conditionNotes || v.ConditionNotes) && (
+                        <div className="pt-2 border-t border-slate-100">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Condition Notes</p>
+                          <p className="text-sm text-slate-600 leading-relaxed">{v.conditionNotes || v.ConditionNotes}</p>
+                        </div>
+                      )}
                     </div>
                   </Card>
                 ))}
