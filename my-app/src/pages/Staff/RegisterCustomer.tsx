@@ -60,98 +60,98 @@ const RegisterCustomer = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-8">
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-12"
+        className="mb-8"
       >
-        <span className="text-indigo-500 font-bold tracking-[0.2em] text-xs uppercase mb-2 block">Onboarding</span>
-        <h1 className="text-4xl font-outfit font-bold text-white mb-2 flex items-center gap-3">
+        <span className="text-indigo-600 font-bold tracking-[0.2em] text-xs uppercase mb-2 block">Onboarding</span>
+        <h1 className="text-3xl font-outfit font-bold text-slate-800 mb-2 flex items-center gap-2">
           Customer Registration
-          <ChevronRight className="text-indigo-500/50" />
+          <ChevronRight className="text-slate-300" size={20} />
         </h1>
-        <p className="text-slate-400">Establish a new service profile for your client and their vehicle.</p>
+        <p className="text-slate-500 text-sm">Establish a new service profile for your client and their vehicle.</p>
       </motion.div>
 
       <AnimatePresence mode="wait">
         {status.type && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            initial={{ opacity: 0, scale: 0.98, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            className={`flex items-center gap-4 p-4 rounded-2xl mb-8 border ${
+            exit={{ opacity: 0, scale: 0.98, y: -10 }}
+            className={`flex items-center gap-3.5 p-4 rounded-xl mb-6 border ${
               status.type === 'success' 
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-              : 'bg-red-500/10 border-red-500/20 text-red-400'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+              : 'bg-red-50 border-red-200 text-red-800'
             }`}
           >
-            {status.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
-            <span className="font-medium text-sm md:text-base">{status.message}</span>
+            {status.type === 'success' ? <CheckCircle2 size={20} className="text-emerald-600" /> : <AlertCircle size={20} className="text-red-600" />}
+            <span className="font-medium text-sm">{status.message}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Customer Details Card */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -15 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="p-8 h-full">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                  <User size={24} />
+            <Card className="p-6 h-full border border-slate-200 shadow-sm bg-white">
+              <div className="flex items-center gap-3.5 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                  <User size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold font-outfit text-white">Identity Details</h3>
-                  <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mt-1">Client Information</p>
+                  <h3 className="text-lg font-bold font-outfit text-slate-800">Identity Details</h3>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Client Information</p>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                    <Tag size={16} className="text-indigo-500" /> Full Name
+              <div className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                    <Tag size={14} className="text-indigo-500" /> Full Name
                   </label>
                   <Input name="fullName" value={formData.fullName} onChange={handleChange} required placeholder="John Doe" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                      <Mail size={16} className="text-indigo-500" /> Email Address
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                      <Mail size={14} className="text-indigo-500" /> Email Address
                     </label>
                     <Input name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="john@example.com" />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                      <Phone size={16} className="text-indigo-500" /> Phone Number
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                      <Phone size={14} className="text-indigo-500" /> Phone Number
                     </label>
                     <Input name="phone" value={formData.phone} onChange={handleChange} required placeholder="9812345678" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                      <Lock size={16} className="text-indigo-500" /> Portal Password
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                      <Lock size={14} className="text-indigo-500" /> Portal Password
                     </label>
                     <Input name="password" type="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                      <Lock size={16} className="text-indigo-500" /> Confirm Password
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                      <Lock size={14} className="text-indigo-500" /> Confirm Password
                     </label>
                     <Input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required placeholder="••••••••" />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                    <MapPin size={16} className="text-indigo-500" /> Physical Address
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                    <MapPin size={14} className="text-indigo-500" /> Physical Address
                   </label>
                   <Input name="address" value={formData.address} onChange={handleChange} placeholder="Kathmandu, Nepal" />
                 </div>
@@ -161,60 +161,60 @@ const RegisterCustomer = () => {
 
           {/* Vehicle Details Card */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 15 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="p-8 h-full">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400">
-                  <Car size={24} />
+            <Card className="p-6 h-full border border-slate-200 shadow-sm bg-white">
+              <div className="flex items-center gap-3.5 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-pink-50 border border-pink-100 flex items-center justify-center text-pink-600">
+                  <Car size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold font-outfit text-white">Vehicle Spec</h3>
-                  <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mt-1">Machine Database</p>
+                  <h3 className="text-lg font-bold font-outfit text-slate-800">Vehicle Spec</h3>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Machine Database</p>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                    <Archive size={16} className="text-pink-500" /> Vehicle Number (Plate)
+              <div className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                    <Archive size={14} className="text-pink-500" /> Vehicle Number (Plate)
                   </label>
                   <Input name="vehicleNumber" value={formData.vehicleNumber} onChange={handleChange} required placeholder="BA 1 PA 1234" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
                        Brand
                     </label>
                     <Input name="brand" value={formData.brand} onChange={handleChange} required placeholder="Toyota" />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
                        Model
                     </label>
                     <Input name="model" value={formData.model} onChange={handleChange} required placeholder="Corolla" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                      <Calendar size={16} className="text-pink-500" /> Manufacture Year
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                      <Calendar size={14} className="text-pink-500" /> Manufacture Year
                     </label>
                     <Input name="year" type="number" value={formData.year} onChange={handleChange} required />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
+                  <div className="space-y-1.5 flex flex-col">
+                    <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5 mb-1.5">
                       Category
                     </label>
                     <select 
                       name="vehicleType" 
                       value={formData.vehicleType} 
                       onChange={handleChange}
-                      className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-slate-200 outline-none focus:border-indigo-500 transition-all font-sans appearance-none"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-800 outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/50 transition-all font-sans shadow-sm"
                     >
                       <option value="">Select Type</option>
                       <option value="Sedan">Sedan</option>
@@ -225,9 +225,9 @@ const RegisterCustomer = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                    <FileText size={16} className="text-pink-500" /> Condition Notes
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                    <FileText size={14} className="text-pink-500" /> Condition Notes
                   </label>
                   <textarea 
                     name="conditionNotes" 
@@ -235,7 +235,7 @@ const RegisterCustomer = () => {
                     onChange={handleChange} 
                     rows={3} 
                     placeholder="Any existing damage or specific service notes..."
-                    className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition-all resize-none"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/50 transition-all resize-none shadow-sm"
                   ></textarea>
                 </div>
               </div>
@@ -247,16 +247,16 @@ const RegisterCustomer = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex justify-end pt-4"
+          className="flex justify-end pt-2"
         >
           <Button 
             type="submit" 
             size="lg" 
-            className="w-full md:w-auto h-16 px-12 text-lg rounded-2xl group"
+            className="w-full sm:w-auto h-12 px-8 text-sm font-medium rounded-xl group"
             isLoading={loading}
           >
             Finalize Registration
-            <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight className="ml-2 group-hover:translate-x-0.5 transition-transform" size={16} />
           </Button>
         </motion.div>
       </form>

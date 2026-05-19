@@ -1,14 +1,46 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
+import { userApi } from '../../api/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const handleLogin = (e: React.FormEvent) => {
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/');
+    setError('');
+    setLoading(true);
+    
+    try {
+      const response = await userApi.login({ email, password });
+      const user = response.data;
+      
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      // Navigate based on RoleID
+      // RoleID 1: Admin, RoleID 2: Staff, RoleID 3: Customer
+      if (user.roleID === 1) {
+        navigate('/admin');
+      } else if (user.roleID === 2 || user.RoleID === 2) {
+        navigate('/staff');
+      } else {
+        // Staff routing for now if RoleID logic differs
+        // Since original logic was navigating to '/', let's see. 
+        // Admin gets 1, Customer gets 3. Let's send Staff/Admin to their dashboards.
+        if (user.roleID === 1 || user.RoleID === 1) navigate('/admin');
+        else if (user.roleID === 3 || user.RoleID === 3) navigate('/');
+        else navigate('/staff');
+      }
+    } catch (err: any) {
+      setError(err.response?.data || 'Invalid credentials. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -23,7 +55,11 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
-
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded text-sm text-center">
+              {error}
+            </div>
+          )}
 
           <div className="space-y-4">
             <div>
@@ -60,8 +96,12 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded flex items-center justify-center gap-2 transition-colors">
-            Sign In <ArrowRight size={18} />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className={`w-full ${loading ? 'bg-blue-600/50' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-3 rounded flex items-center justify-center gap-2 transition-colors`}
+          >
+            {loading ? 'Signing in...' : 'Sign In'} <ArrowRight size={18} />
           </button>
         </form>
 

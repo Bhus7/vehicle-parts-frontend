@@ -49,6 +49,17 @@ function Topbar() {
     return () => clearInterval(interval);
   }, []);
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const getInitials = (name: string) => {
+    if (!name) return 'U';
+    return name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
@@ -126,10 +137,6 @@ function Topbar() {
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <IconButton color="inherit" onClick={toggleTheme}>
-          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-        </IconButton>
-
         <IconButton color="inherit" onClick={handleNotifOpen}>
           <Badge badgeContent={unreadCount} color="primary" sx={{ '& .MuiBadge-badge': { bgcolor: '#F29F67', color: '#fff' } }}>
             <Bell size={20} />
@@ -137,7 +144,7 @@ function Topbar() {
         </IconButton>
 
         <IconButton onClick={handleOpen} sx={{ p: 0 }}>
-          <Avatar sx={{ width: 36, height: 36, bgcolor: theme.palette.secondary.main, fontSize: '0.9rem' }}>A</Avatar>
+          <Avatar sx={{ width: 36, height: 36, bgcolor: theme.palette.secondary.main, fontSize: '0.9rem' }}>{getInitials(user.fullName || user.FullName)}</Avatar>
         </IconButton>
 
         {/* Notifications Menu */}
@@ -245,7 +252,7 @@ function Topbar() {
             <ListItemIcon><Settings size={18} /></ListItemIcon>
             <ListItemText primary="Settings" />
           </MenuItem>
-          <MenuItem onClick={handleClose} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
             <ListItemIcon><LogOut size={18} /></ListItemIcon>
             <ListItemText primary="Logout" />
           </MenuItem>

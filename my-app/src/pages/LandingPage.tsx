@@ -40,7 +40,6 @@ const LandingPage = () => {
             <a href="#about" className="hover:text-white">About Us</a>
             <a href="#contact" className="hover:text-white">Contact</a>
           </div>
-
           <div className="flex items-center gap-4">
             <div className="relative">
               <Link to="/cart" className="block">
@@ -52,7 +51,7 @@ const LandingPage = () => {
                 )}
               </Link>
             </div>
-            <Link text-sm to="/login" className="px-4 py-2 text-slate-300 hover:text-white">Login</Link>
+            <Link to="/login" className="text-sm px-4 py-2 text-slate-300 hover:text-white">Login</Link>
             <Link to="/register" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow">Register</Link>
           </div>
         </div>

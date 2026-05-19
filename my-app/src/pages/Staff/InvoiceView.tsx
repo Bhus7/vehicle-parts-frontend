@@ -54,9 +54,9 @@ const InvoiceView = () => {
   );
 
   if (!invoice) return (
-    <Card className="p-20 text-center border-dashed border-white/5">
-       <Shield size={48} className="text-slate-800 mx-auto mb-6" />
-       <h2 className="text-xl font-bold text-white mb-2">Record Not Found</h2>
+    <Card className="p-20 text-center border-dashed border-slate-200 bg-white shadow-sm">
+       <Shield size={48} className="text-slate-400 mx-auto mb-6" />
+       <h2 className="text-xl font-bold text-slate-800 mb-2">Record Not Found</h2>
        <p className="text-sm text-slate-500 mb-8">The requested invoice ID does not exist in the ledger.</p>
        <Link to="/staff/search">
           <Button variant="primary">Return to Registry</Button>
@@ -65,20 +65,20 @@ const InvoiceView = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-20">
+    <div className="max-w-5xl mx-auto space-y-8 pb-20 px-4">
       <motion.div 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className="flex flex-col md:flex-row md:items-center justify-between gap-6 no-print"
       >
-        <Link to="/staff/search" className="group flex items-center gap-3 text-slate-500 hover:text-white transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-all">
+        <Link to="/staff/search" className="group flex items-center gap-3 text-slate-500 hover:text-indigo-650 transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-white transition-all">
              <ArrowLeft size={18} />
           </div>
           <span className="text-xs font-black uppercase tracking-widest">Back to Records</span>
         </Link>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" className="gap-2" onClick={handlePrint}>
+          <Button variant="outline" className="gap-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50" onClick={handlePrint}>
             <Printer size={18} /> Print Record
           </Button>
           <Button variant="primary" className="gap-2 px-8 min-w-[200px]" onClick={handleSend} isLoading={sending}>
@@ -102,16 +102,16 @@ const InvoiceView = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="bg-white text-slate-900 rounded-[2rem] shadow-2xl overflow-hidden print:shadow-none print:rounded-none">
+        <div className="bg-white text-slate-900 rounded-[2rem] shadow-xl border border-slate-200/80 overflow-hidden print:shadow-none print:rounded-none">
           {/* Header Strip */}
-          <div className="bg-slate-950 p-8 md:p-12 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+          <div className="bg-slate-900 p-8 md:p-12 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="flex items-center gap-4">
                <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-500/20">
                   <span className="text-3xl font-black italic">A</span>
                </div>
                <div>
                   <h1 className="text-2xl font-black uppercase tracking-tighter">AutoParts</h1>
-                  <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest">Enterprise Service Node</p>
+                  <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Enterprise Service Node</p>
                </div>
             </div>
             <div className="text-right">
