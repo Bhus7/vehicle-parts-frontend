@@ -10,6 +10,7 @@ const RegisterCustomer = () => {
     email: '',
     phone: '',
     password: '',
+    confirmPassword: '',
     address: '',
     vehicleNumber: '',
     brand: '',
@@ -32,13 +33,19 @@ const RegisterCustomer = () => {
     setStatus({ type: null, message: '' });
 
     try {
+      if (formData.password !== formData.confirmPassword) {
+        setStatus({ type: 'error', message: 'Passwords do not match. Please verify and try again.' });
+        setLoading(false);
+        return;
+      }
+
       await staffApi.registerCustomer(formData);
       setStatus({ 
         type: 'success', 
         message: `Successfully registered ${formData.fullName} and vehicle ${formData.vehicleNumber}!` 
       });
       setFormData({
-        fullName: '', email: '', phone: '', password: '', address: '',
+        fullName: '', email: '', phone: '', password: '', confirmPassword: '', address: '',
         vehicleNumber: '', brand: '', model: '', year: new Date().getFullYear(),
         vehicleType: '', conditionNotes: ''
       });
@@ -127,11 +134,19 @@ const RegisterCustomer = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
-                    <Lock size={16} className="text-indigo-500" /> Portal Password
-                  </label>
-                  <Input name="password" type="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
+                      <Lock size={16} className="text-indigo-500" /> Portal Password
+                    </label>
+                    <Input name="password" type="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-400 flex items-center gap-2 mb-1">
+                      <Lock size={16} className="text-indigo-500" /> Confirm Password
+                    </label>
+                    <Input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required placeholder="••••••••" />
+                  </div>
                 </div>
 
                 <div className="space-y-2">

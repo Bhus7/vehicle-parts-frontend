@@ -49,9 +49,15 @@ const Register = () => {
                 <input required type="tel" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="555-0198" />
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
-                <input required type="password" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="••••••••" />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
+                  <input required type="password" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="••••••••" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-400 mb-2">Confirm Password</label>
+                  <input required type="password" className="w-full bg-slate-900 border border-slate-700 rounded px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="••••••••" />
+                </div>
               </div>
             </div>
 
