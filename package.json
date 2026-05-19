@@ -1,0 +1,15 @@
+{
+  "name": "vehicle-parts-frontend-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix my-app",
+    "build": "npm run build --prefix my-app",
+    "preview": "npm run preview --prefix my-app"
+  },
+  "dependencies": {
+    "axios": "^1.15.2"
+  },
+  "devDependencies": {
+    "vite": "^8.0.10"
+  }
+}
