@@ -24,6 +24,8 @@ import InvoiceView from './pages/Staff/InvoiceView';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import CartPage from './pages/Customer/CartPage';
+import PartRequests from './pages/Customer/PartRequests';
+import CustomerRequests from './pages/admin/CustomerRequests';
 
 import './App.css';
 
@@ -183,12 +185,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/customer/requests" element={<PartRequests />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="parts" element={<PartsInventory />} />
           <Route path="vendors" element={<VendorsDirectory />} />
+          <Route path="requests" element={<CustomerRequests />} />
           <Route path="purchase/new" element={<NewPurchaseOrder />} />
           <Route path="purchase/history" element={<PurchaseHistory />} />
           <Route path="staff" element={<StaffManagement />} />

@@ -31,6 +31,8 @@ function Dashboard() {
     revenue: '$0',
     sales: '$0'
   });
+  const [salesTrend, setSalesTrend] = useState<any[]>([]);
+  const [orderComparison, setOrderComparison] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch Staff Count
@@ -66,6 +68,12 @@ function Dashboard() {
             sales: `$${res.data.totalSales ? res.data.totalSales.toLocaleString() : 0}`,
             revenue: `$${res.data.totalRevenue ? res.data.totalRevenue.toLocaleString() : 0}`
           }));
+          if (Array.isArray(res.data.salesTrend)) {
+            setSalesTrend(res.data.salesTrend);
+          }
+          if (Array.isArray(res.data.orderComparison)) {
+            setOrderComparison(res.data.orderComparison);
+          }
         }
       }).catch(() => {});
   }, []);
@@ -133,14 +141,14 @@ function Dashboard() {
               </Box>
               <Box sx={{ height: 320, mt: 2 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={salesData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                  <LineChart data={salesTrend.length > 0 ? salesTrend : salesData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
                     <XAxis dataKey="name" stroke={theme.palette.text.secondary} />
                     <YAxis stroke={theme.palette.text.secondary} />
                     <Tooltip contentStyle={{ borderRadius: 8, backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` }} />
                     <Legend />
-                    <Line type="monotone" dataKey="current" name="Current Year" stroke="#F29F67" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="previous" name="Previous Year" stroke="#666666" strokeWidth={2} strokeDasharray="5 5" />
+                    <Line type="monotone" dataKey="current" name="Sales (Revenue)" stroke="#F29F67" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }} />
+                    <Line type="monotone" dataKey="previous" name="Purchases (Expenses)" stroke="#666666" strokeWidth={2} strokeDasharray="5 5" />
                   </LineChart>
                 </ResponsiveContainer>
               </Box>
@@ -155,14 +163,14 @@ function Dashboard() {
               </Box>
               <Box sx={{ height: 320, mt: 2 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={orderData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                  <BarChart data={orderComparison.length > 0 ? orderComparison : orderData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} vertical={false} />
                     <XAxis dataKey="name" stroke={theme.palette.text.secondary} />
                     <YAxis stroke={theme.palette.text.secondary} />
                     <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: 8, backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` }} />
                     <Legend />
-                    <Bar dataKey="thisMonth" name="This Month" fill="#3B8FF3" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="lastMonth" name="Last Month" fill="#1E1E2C" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="thisMonth" name="Sales Invoices" fill="#3B8FF3" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="lastMonth" name="Purchase Orders" fill="#1E1E2C" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </Box>

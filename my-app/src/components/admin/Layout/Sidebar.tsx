@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material';
-import { LayoutDashboard, Package, Users, ShoppingCart, History, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, Package, Users, ShoppingCart, History, ShieldAlert, ClipboardList } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { text: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/admin' },
   { text: 'Parts Inventory', icon: <Package size={20} />, path: '/admin/parts' },
   { text: 'Vendors', icon: <Users size={20} />, path: '/admin/vendors' },
+  { text: 'Customer Requests', icon: <ClipboardList size={20} />, path: '/admin/requests' },
   { text: 'New Purchase', icon: <ShoppingCart size={20} />, path: '/admin/purchase/new' },
   { text: 'Purchase History', icon: <History size={20} />, path: '/admin/purchase/history' },
   { text: 'Staff Management', icon: <ShieldAlert size={20} />, path: '/admin/staff' },
