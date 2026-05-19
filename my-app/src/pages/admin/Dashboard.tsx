@@ -28,8 +28,8 @@ function Dashboard() {
     staffCount: 0,
     customerCount: 0,
     ordersCount: 0,
-    revenue: '$0',
-    sales: '$0'
+    revenue: 'Rs. 0',
+    sales: 'Rs. 0'
   });
 
   useEffect(() => {
@@ -63,8 +63,8 @@ function Dashboard() {
         if (res.data) {
           setStats(prev => ({
             ...prev,
-            sales: `$${res.data.totalSales ? res.data.totalSales.toLocaleString() : 0}`,
-            revenue: `$${res.data.totalRevenue ? res.data.totalRevenue.toLocaleString() : 0}`
+            sales: `Rs. ${res.data.totalSales ? res.data.totalSales.toLocaleString() : 0}`,
+            revenue: `Rs. ${res.data.totalRevenue ? res.data.totalRevenue.toLocaleString() : 0}`
           }));
         }
       }).catch(() => {});
@@ -82,18 +82,10 @@ function Dashboard() {
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3, mb: 4 }}>
-        <Box>
-          <StatCard title="Total Sales" value={stats.sales} color="#F29F67" progress={75} icon={<DollarSign size={24} />} />
-        </Box>
-        <Box>
-          <StatCard title="Staff Members" value={stats.staffCount.toString()} color="#3B8FF3" progress={60} icon={<Users size={24} />} />
-        </Box>
-        <Box>
-          <StatCard title="Total Customers" value={stats.customerCount.toString()} color="#34B1AA" progress={85} icon={<TrendingUp size={24} />} />
-        </Box>
-        <Box>
-          <StatCard title="New Orders" value={stats.ordersCount.toString()} color="#E0B50F" progress={45} icon={<ShoppingCart size={24} />} />
-        </Box>
+        <StatCard title="Total Sales" value={stats.sales} color="#F29F67" progress={75} icon={<DollarSign size={18} />} />
+        <StatCard title="Staff Members" value={stats.staffCount.toString()} color="#3B8FF3" progress={60} icon={<Users size={18} />} />
+        <StatCard title="Total Customers" value={stats.customerCount.toString()} color="#34B1AA" progress={85} icon={<TrendingUp size={18} />} />
+        <StatCard title="New Orders" value={stats.ordersCount.toString()} color="#E0B50F" progress={45} icon={<ShoppingCart size={18} />} />
       </Box>
 
       {/* Critical Alerts Section */}
