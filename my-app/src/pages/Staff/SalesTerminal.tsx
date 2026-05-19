@@ -180,18 +180,18 @@ const SalesTerminal = () => {
   );
 
   return (
-    <div className="max-w-[1600px] mx-auto">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <span className="text-indigo-500 font-bold tracking-[0.2em] text-xs uppercase mb-2 block">Terminal</span>
-          <h1 className="text-4xl font-outfit font-bold text-white mb-2">Sales Interface</h1>
-          <p className="text-slate-400">Process spare parts transactions and fulfillment.</p>
+          <span className="text-indigo-600 font-bold tracking-[0.2em] text-xs uppercase mb-2 block">Terminal</span>
+          <h1 className="text-3xl font-outfit font-bold text-slate-800 mb-2">Sales Interface</h1>
+          <p className="text-slate-500 text-sm">Process spare parts transactions and fulfillment.</p>
         </div>
-        <div className="flex bg-slate-800/50 p-1.5 rounded-2xl border border-white/5 md:w-96">
-            <Search className="ml-3 mt-2.5 text-slate-500" size={18} />
+        <div className="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm md:w-96">
+            <Search className="ml-3 mt-2.5 text-slate-400" size={18} />
             <input 
-              className="bg-transparent border-none outline-none text-sm p-2.5 w-full text-slate-200"
+              className="bg-transparent border-none outline-none text-sm p-2 w-full text-slate-800 placeholder:text-slate-400"
               placeholder="Filter inventory by name or category..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -200,37 +200,37 @@ const SalesTerminal = () => {
       </div>
 
       {/* Step 1: Customer Selection Registry */}
-      <div className="mb-8 p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-6">
+      <div className="mb-8 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-6">
         <div>
-          <span className="text-indigo-500 font-bold tracking-[0.2em] text-xs uppercase mb-2 block">Step 1 — Customer Registry</span>
-          <h2 className="text-xl font-bold text-white">Select Customer File</h2>
-          <p className="text-xs text-slate-400">Search customer registry by Name, Phone Number, Customer ID, or Vehicle Plate Number.</p>
+          <span className="text-indigo-600 font-bold tracking-[0.2em] text-[10px] uppercase mb-2 block">Step 1 — Customer Registry</span>
+          <h2 className="text-lg font-bold text-slate-800">Select Customer File</h2>
+          <p className="text-xs text-slate-500">Search customer registry by Name, Phone Number, Customer ID, or Vehicle Plate Number.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="relative">
-            <Search className="absolute left-4 top-3.5 text-slate-500" size={18} />
+            <Search className="absolute left-4 top-3.5 text-slate-400" size={18} />
             <Input 
               placeholder="Type Name, Phone or ID to search..." 
-              className="pl-12 bg-white/5 border-white/5 w-full"
+              className="pl-12 w-full"
               value={customerSearch}
               onChange={(e) => handleCustomerSearch(e.target.value)}
             />
 
             {/* Dropdown list of matching customers */}
             {matchingCustomers.length > 0 && (
-              <div className="absolute left-0 right-0 mt-2 bg-slate-950 border border-white/10 rounded-xl shadow-2xl max-h-[250px] overflow-y-auto z-30 divide-y divide-white/5">
+              <div className="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-[250px] overflow-y-auto z-30 divide-y divide-slate-100">
                 {matchingCustomers.map((cust) => (
                   <button
                     key={cust.userID}
                     onClick={() => selectCustomer(cust)}
-                    className="w-full text-left p-4 hover:bg-indigo-600/20 flex flex-col gap-1 transition-colors text-white text-sm"
+                    className="w-full text-left p-4 hover:bg-slate-50 flex flex-col gap-1 transition-colors text-slate-850 text-sm"
                   >
-                    <div className="flex justify-between font-bold">
+                    <div className="flex justify-between font-bold text-slate-800">
                       <span>{cust.fullName}</span>
-                      <span className="text-indigo-400 text-xs">ID: {cust.userID}</span>
+                      <span className="text-indigo-600 text-xs">ID: {cust.userID}</span>
                     </div>
-                    <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <div className="flex justify-between text-xs text-slate-500 mt-1">
                       <span>Phone: {cust.phone || 'N/A'}</span>
                       <span>Vehicles: {cust.vehicles?.join(', ') || 'N/A'}</span>
                     </div>
@@ -246,28 +246,28 @@ const SalesTerminal = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex justify-between items-center"
+                className="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100 flex justify-between items-center"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <UserIcon size={16} className="text-indigo-400" />
-                    <span className="font-bold text-white text-sm">{selectedCustomer.fullName}</span>
+                    <UserIcon size={16} className="text-indigo-600" />
+                    <span className="font-bold text-slate-800 text-sm">{selectedCustomer.fullName}</span>
                     <span className="text-[10px] bg-indigo-600 text-white font-bold px-2 py-0.5 rounded">ID: {selectedCustomer.userID}</span>
                   </div>
-                  <div className="text-xs text-slate-400 mt-2 space-y-1">
+                  <div className="text-xs text-slate-500 mt-2 space-y-1">
                     <p>Phone: {selectedCustomer.phone || 'N/A'}</p>
                     <p>Vehicle: {selectedCustomer.vehicles?.[0] || 'N/A'}</p>
                   </div>
                 </div>
                 <button
                   onClick={clearCustomerSelection}
-                  className="text-xs text-slate-500 hover:text-red-400 font-bold underline"
+                  className="text-xs text-slate-400 hover:text-red-500 font-bold underline"
                 >
                   Change
                 </button>
               </motion.div>
             ) : (
-              <div className="p-4 rounded-xl border border-dashed border-white/10 flex items-center justify-center text-slate-500 italic text-sm min-h-[92px]">
+              <div className="p-4 rounded-xl border border-dashed border-slate-200 flex items-center justify-center text-slate-400 italic text-sm min-h-[92px]">
                 No customer linked yet. Search and select a customer above.
               </div>
             )}
@@ -276,19 +276,19 @@ const SalesTerminal = () => {
       </div>
 
       {/* Main Flow: Step 2 & Step 3 */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8 items-start">
+      <div className="grid grid-cols-1 2xl:grid-cols-[1fr_400px] gap-8 items-start">
         {/* Parts Catalog */}
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="text-indigo-500 font-bold tracking-[0.2em] text-xs uppercase block">Step 2 — Vehicle Parts Catalog</span>
-              <span className="text-xs text-slate-400">{filteredParts.length} parts found</span>
+              <span className="text-indigo-600 font-bold tracking-[0.2em] text-[10px] uppercase block">Step 2 — Vehicle Parts Catalog</span>
+              <span className="text-xs text-slate-500">{filteredParts.length} parts found</span>
             </div>
             
-            <div className="flex bg-slate-800/50 p-1.5 rounded-xl border border-white/5 w-full sm:w-72">
-              <Search className="ml-2.5 mt-1.5 text-slate-500" size={16} />
+            <div className="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm w-full sm:w-72">
+              <Search className="ml-2.5 mt-1.5 text-slate-400" size={16} />
               <input 
-                className="bg-transparent border-none outline-none text-xs p-1.5 w-full text-slate-200"
+                className="bg-transparent border-none outline-none text-xs p-1.5 w-full text-slate-800 placeholder:text-slate-400"
                 placeholder="Quick search parts or category..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -296,19 +296,19 @@ const SalesTerminal = () => {
             </div>
           </div>
 
-          <div className="overflow-hidden border border-white/5 bg-slate-900/40 backdrop-blur-md rounded-2xl">
+          <div className="overflow-hidden border border-slate-200 bg-white rounded-2xl shadow-sm">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/5 bg-white/[0.02]">
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Part Description</th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Category</th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Price</th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Stock</th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">In Cart</th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-600">Part Description</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-600">Category</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-600 text-right">Price</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-600 text-center">Stock</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-600 text-center">In Cart</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-600 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-100">
                 <AnimatePresence mode="popLayout">
                   {filteredParts.map((part) => {
                     const cartQty = cart.find(item => item.partID === part.partID)?.selectedQuantity || 0;
@@ -321,38 +321,38 @@ const SalesTerminal = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2 }}
-                        className="hover:bg-white/[0.02] transition-colors"
+                        className="hover:bg-slate-50/50 transition-colors"
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400">
+                            <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-150 flex items-center justify-center text-slate-500">
                               <Package size={18} />
                             </div>
-                            <span className="font-bold text-white text-sm">{part.partName}</span>
+                            <span className="font-semibold text-slate-800 text-sm">{part.partName}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-xs text-slate-400 uppercase tracking-widest font-semibold">{part.category}</span>
+                          <span className="text-xs text-slate-500 uppercase tracking-widest font-semibold">{part.category}</span>
                         </td>
-                        <td className="px-6 py-4 text-right font-bold text-white text-sm font-mono">
+                        <td className="px-6 py-4 text-right font-bold text-slate-800 text-sm font-mono">
                           Rs. {part.unitPrice}
                         </td>
                         <td className="px-6 py-4 text-center">
                           <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
                             isLowStock 
-                            ? 'bg-red-500/10 border-red-500/20 text-red-500 animate-pulse' 
-                            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+                            ? 'bg-red-50 border-red-200 text-red-600 animate-pulse' 
+                            : 'bg-emerald-50 border-emerald-200 text-emerald-600'
                           }`}>
                             {part.stockQuantity} {isLowStock ? '(Low)' : ''}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
                           {cartQty > 0 ? (
-                            <span className="text-xs font-black px-2 py-0.5 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-lg">
+                            <span className="text-xs font-black px-2 py-0.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-lg">
                               {cartQty}
                             </span>
                           ) : (
-                            <span className="text-xs text-slate-600">-</span>
+                            <span className="text-xs text-slate-400">-</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -360,7 +360,7 @@ const SalesTerminal = () => {
                             type="button"
                             onClick={() => addToCart(part)}
                             disabled={part.stockQuantity === 0 || cartQty >= part.stockQuantity}
-                            className="inline-flex w-8 h-8 rounded-lg bg-indigo-500 text-white items-center justify-center hover:bg-indigo-600 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+                            className="inline-flex w-8 h-8 rounded-lg bg-indigo-600 text-white items-center justify-center hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale shadow-sm"
                           >
                             <Plus size={16} />
                           </button>
@@ -376,26 +376,26 @@ const SalesTerminal = () => {
 
         {/* Sidebar: Cart & Checkout (Step 3 & 4 & 5) */}
         <div className="sticky top-[100px] z-20">
-          <Card className="p-0 border-white/10 ring-1 ring-white/5 shadow-2xl">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-              <div className="flex items-center gap-3 text-indigo-400">
+          <Card className="p-0 border border-slate-200 shadow-md bg-white">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2.5 text-indigo-600">
                 <ShoppingCart size={20} />
-                <h3 className="font-bold text-lg font-outfit uppercase tracking-wider text-white">Active Cart</h3>
+                <h3 className="font-bold text-base font-outfit uppercase tracking-wider text-slate-800">Active Cart</h3>
               </div>
-              <span className="text-xs font-black px-2 py-1 bg-indigo-500 rounded-lg text-white">
+              <span className="text-xs font-bold px-2 py-1 bg-indigo-600 rounded-lg text-white">
                 {cart.length} ITEMS
               </span>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-5 space-y-5">
               {/* Linked Customer (Step 1 link indicator) */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Customer Link Status</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-550 block">Customer Link Status</label>
                 <div className="relative">
-                  <UserIcon className="absolute left-4 top-3.5 text-slate-500" size={16} />
+                  <UserIcon className="absolute left-4 top-3.5 text-slate-400" size={16} />
                   <Input 
                     placeholder="Search User ID..." 
-                    className="pl-12 bg-white/5 border-white/5 cursor-not-allowed" 
+                    className="pl-12 cursor-not-allowed bg-slate-50 border-slate-200" 
                     value={customerId ? `Selected Customer: ID ${customerId}` : 'No Customer Linked'} 
                     disabled
                   />
@@ -405,7 +405,7 @@ const SalesTerminal = () => {
               {/* Cart Items List */}
               <div className="max-h-[250px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
                 {cart.length === 0 ? (
-                  <div className="py-12 text-center text-slate-600 italic text-sm">
+                  <div className="py-12 text-center text-slate-400 italic text-sm">
                     Cart is currently empty.
                   </div>
                 ) : (
@@ -415,24 +415,24 @@ const SalesTerminal = () => {
                       layout
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="p-4 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-4"
+                      className="p-3.5 rounded-xl bg-slate-50 border border-slate-150 flex items-center gap-3.5"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-white text-sm truncate">{item.partName}</p>
-                        <p className="text-indigo-400 font-bold text-xs">Rs. {item.unitPrice * item.selectedQuantity}</p>
+                        <p className="font-semibold text-slate-800 text-sm truncate">{item.partName}</p>
+                        <p className="text-indigo-600 font-bold text-xs">Rs. {item.unitPrice * item.selectedQuantity}</p>
                       </div>
                       
-                      <div className="flex items-center gap-2 bg-slate-900 rounded-lg p-1 border border-white/5">
+                      <div className="flex items-center gap-2 bg-white rounded-lg p-1 border border-slate-200">
                         <button 
-                          className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white"
+                          className="w-6 h-6 flex items-center justify-center text-slate-450 hover:text-slate-700"
                           onClick={() => updateQuantity(item.partID, -1)}
                         >
                           <Minus size={12} />
                         </button>
-                        <span className="text-xs font-bold w-4 text-center">{item.selectedQuantity}</span>
+                        <span className="text-xs font-bold w-4 text-center text-slate-800">{item.selectedQuantity}</span>
                         <button 
-                         className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white"
-                         onClick={() => updateQuantity(item.partID, 1)}
+                          className="w-6 h-6 flex items-center justify-center text-slate-450 hover:text-slate-700"
+                          onClick={() => updateQuantity(item.partID, 1)}
                         >
                           <Plus size={12} />
                         </button>
@@ -440,7 +440,7 @@ const SalesTerminal = () => {
 
                       <button 
                         onClick={() => removeFromCart(item.partID)}
-                        className="p-2 text-slate-600 hover:text-red-500 transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -450,26 +450,26 @@ const SalesTerminal = () => {
               </div>
 
               {/* Step 3: Cart / Invoice Calculation */}
-              <div className="p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 space-y-3">
+              <div className="p-5 rounded-2xl bg-indigo-50 border border-indigo-100 space-y-3 shadow-inner">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400 font-medium">Subtotal</span>
-                  <span className="text-white font-bold">Rs. {subtotal.toFixed(2)}</span>
+                  <span className="text-slate-600 font-medium">Subtotal</span>
+                  <span className="text-slate-850 font-bold">Rs. {subtotal.toFixed(2)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-emerald-400 font-medium">Loyalty Discount (10%)</span>
-                    <span className="text-emerald-400 font-bold">-Rs. {discount.toFixed(2)}</span>
+                    <span className="text-emerald-600 font-medium">Loyalty Discount (10%)</span>
+                    <span className="text-emerald-600 font-bold">-Rs. {discount.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="pt-3 border-t border-indigo-500/30 flex justify-between">
-                  <span className="text-white font-black text-lg uppercase font-outfit">Total Due</span>
-                  <span className="text-indigo-400 font-black text-2xl">Rs. {total.toFixed(2)}</span>
+                <div className="pt-3 border-t border-indigo-150 flex justify-between">
+                  <span className="text-slate-800 font-bold text-base uppercase font-outfit">Total Due</span>
+                  <span className="text-indigo-600 font-bold text-xl">Rs. {total.toFixed(2)}</span>
                 </div>
               </div>
 
               {/* Step 4: Payment Section */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Settlement Method</label>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-550 block">Settlement Method</label>
                 <div className="grid grid-cols-3 gap-2">
                    {['Cash', 'Card', 'Credit'].map((method) => (
                      <button
@@ -478,8 +478,8 @@ const SalesTerminal = () => {
                        onClick={() => setPaymentMethod(method)}
                        className={`flex flex-col items-center gap-2 py-3 rounded-xl border transition-all ${
                          paymentMethod === method 
-                         ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg' 
-                         : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
+                         ? 'bg-indigo-600 border-indigo-500 text-white shadow-md' 
+                         : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
                        }`}
                      >
                        {method === 'Cash' && <Banknote size={16} />}
@@ -490,16 +490,16 @@ const SalesTerminal = () => {
                    ))}
                 </div>
 
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Payment Status:</span>
-                  <span className={`font-black uppercase tracking-widest px-3 py-1 rounded ${
-                    paymentMethod === 'Credit' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20 animate-pulse' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-150 flex items-center justify-between text-xs">
+                  <span className="text-slate-600 font-bold uppercase tracking-widest text-[10px]">Payment Status:</span>
+                  <span className={`font-black uppercase tracking-widest px-3 py-1 rounded text-[10px] ${
+                    paymentMethod === 'Credit' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                   }`}>
                     {paymentMethod === 'Credit' ? 'Pending' : 'Paid'}
                   </span>
                 </div>
                 {paymentMethod === 'Credit' && (
-                  <div className="text-[10px] text-amber-400 italic">
+                  <div className="text-[10px] text-amber-600 italic leading-relaxed">
                     * Customer will be billed on store credit. Overdue tracking is active for this invoice.
                   </div>
                 )}
@@ -507,13 +507,13 @@ const SalesTerminal = () => {
 
               {/* Step 5: Generate Invoice Button */}
               <Button 
-                className="w-full h-16 text-lg tracking-wider rounded-2xl group" 
+                className="w-full h-14 text-sm font-bold tracking-wider rounded-xl group" 
                 onClick={handleCheckout} 
                 isLoading={loading}
                 disabled={cart.length === 0 || !customerId}
               >
                 AUTHORIZE CHECKOUT
-                <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="ml-1.5 group-hover:translate-x-0.5 transition-transform" size={16} />
               </Button>
 
               {/* Status Message Panel */}
