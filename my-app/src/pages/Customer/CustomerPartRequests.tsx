@@ -15,6 +15,7 @@ interface PartRequest {
   id?: number;
   vehicleID: number;
   partName: string;
+  notes?: string;
   status: string;
   createdDate?: string;
   requestDate?: string;
@@ -51,6 +52,9 @@ const CustomerPartRequestsPage = () => {
   // Form state
   const [vehicleID, setVehicleID] = useState<number>(0);
   const [partName,  setPartName]  = useState('');
+  const [category,  setCategory]  = useState('General');
+  const [quantity,  setQuantity]  = useState<number>(1);
+  const [notes,     setNotes]     = useState('');
 
   // ── Load data ──────────────────────────────────────────────────
   const loadData = () => {
@@ -86,12 +90,18 @@ const CustomerPartRequestsPage = () => {
     const payload = {
       vehicleID,
       partName: partName.trim(),
+      category: category,
+      quantity: quantity,
+      notes: notes.trim(),
     };
 
     try {
       await customerApi.submitPartRequest(userId, payload);
       setSuccess(`Request for "${partName}" submitted successfully!`);
       setPartName('');
+      setCategory('General');
+      setQuantity(1);
+      setNotes('');
       setShowForm(false);
       loadData();
     } catch (err: any) {
@@ -164,6 +174,56 @@ const CustomerPartRequestsPage = () => {
               />
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Category</label>
+                <select
+                  id="part-category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none"
+                >
+                  <option value="General">General</option>
+                  <option value="Engine">Engine</option>
+                  <option value="Transmission">Transmission</option>
+                  <option value="Brakes">Brakes</option>
+                  <option value="Suspension">Suspension</option>
+                  <option value="Electrical">Electrical</option>
+                  <option value="Body">Body</option>
+                  <option value="Interior">Interior</option>
+                </select>
+              </div>
+
+              {/* Quantity */}
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Quantity</label>
+                <input
+                  id="part-quantity"
+                  type="number"
+                  min="1"
+                  max="100"
+                  required
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Notes / Description */}
+            <div>
+              <label className="block text-sm font-bold text-slate-400 mb-2">Description / Notes <span className="font-normal text-slate-500">(optional)</span></label>
+              <textarea
+                id="part-notes"
+                rows={3}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Any specific details, brand preference, or condition notes..."
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none placeholder:text-slate-600 resize-none"
+              />
+            </div>
+
             <div className="flex gap-3">
               <button type="button" onClick={() => setShowForm(false)}
                 className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition-colors">
@@ -197,6 +257,7 @@ const CustomerPartRequestsPage = () => {
             <thead className="bg-slate-900/60">
               <tr className="text-slate-400 text-xs font-bold uppercase tracking-wider">
                 <th className="text-left px-5 py-3">Part Name</th>
+                <th className="text-left px-5 py-3">Notes</th>
                 <th className="text-left px-5 py-3">Vehicle</th>
                 <th className="text-left px-5 py-3">Date</th>
                 <th className="text-left px-5 py-3">Status</th>
@@ -210,6 +271,9 @@ const CustomerPartRequestsPage = () => {
                 return (
                   <tr key={id} className="border-t border-slate-700/50 hover:bg-slate-700/20 transition-colors">
                     <td className="px-5 py-4 font-bold text-white">{req.partName}</td>
+                    <td className="px-5 py-4 text-slate-400 text-sm max-w-xs truncate" title={req.notes}>
+                      {req.notes || '—'}
+                    </td>
                     <td className="px-5 py-4 text-slate-400 text-sm">
                       {veh ? `${veh.brand} ${veh.model}` : `Vehicle #${req.vehicleID}`}
                     </td>
