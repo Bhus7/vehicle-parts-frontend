@@ -20,15 +20,27 @@ import Reports from './pages/Staff/Reports';
 import StaffDashboard from './pages/Staff/StaffDashboard';
 import InvoiceView from './pages/Staff/InvoiceView';
 
-// Auth & Customer Imports
+// Auth Imports
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
+
+// Customer Portal Imports (Sections 12, 13, 14)
+import CustomerLayout from './components/customer/CustomerLayout';
+import CustomerDashboard from './pages/Customer/CustomerDashboard';
+import CustomerAppointments from './pages/Customer/CustomerAppointments';
+import CustomerPartRequestsPage from './pages/Customer/CustomerPartRequests';
+import CustomerHistory from './pages/Customer/CustomerHistory';
+import CustomerProfile from './pages/Customer/CustomerProfile';
+import CustomerReviews from './pages/Customer/CustomerReviews';
+
+// Legacy Customer Pages
 import CartPage from './pages/Customer/CartPage';
 import PartRequests from './pages/Customer/PartRequests';
 import CustomerRequests from './pages/admin/CustomerRequests';
 
 import './App.css';
 
+// ─── Protected Route ──────────────────────────────────────────────────────────
 interface ProtectedRouteProps {
   children: React.ReactElement;
   allowedRoles: string[];
@@ -41,15 +53,15 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   }
 
   const user = JSON.parse(userStr);
-  
+
   let userRole = '';
   const roleId = user.roleID ?? user.RoleID;
-  if (roleId === 1) userRole = 'Admin';
+  if (roleId === 1)      userRole = 'Admin';
   else if (roleId === 2) userRole = 'Staff';
   else if (roleId === 3) userRole = 'Customer';
 
-  const isAllowed = allowedRoles.some(r => r.toLowerCase() === userRole.toLowerCase());
-  
+  const isAllowed = allowedRoles.some((r) => r.toLowerCase() === userRole.toLowerCase());
+
   if (!isAllowed) {
     return <Navigate to="/login" replace />;
   }
@@ -57,17 +69,17 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   return children;
 }
 
-// Staff Layout Component
+// ─── Staff Layout ─────────────────────────────────────────────────────────────
 function StaffLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const getInitials = (name: string) => {
     if (!name) return 'U';
     return name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
   };
-  
+
   const getRoleName = (roleId: number) => {
     if (roleId === 1) return 'Admin';
     if (roleId === 2) return 'Staff';
@@ -99,65 +111,65 @@ function StaffLayout() {
             </h2>
           </Link>
         </div>
-        
+
         <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
           <div className="px-4 py-2 mb-1">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Core Navigation</p>
           </div>
-          
-          <Link 
-            to="/staff" 
+
+          <Link
+            to="/staff"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff') 
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none' 
+              isActive('/staff')
+                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             <LayoutDashboard size={18} className={isActive('/staff') ? 'text-indigo-600' : 'text-slate-400'} />
             <span className="text-sm">Overview</span>
           </Link>
-          
-          <Link 
-            to="/staff/register" 
+
+          <Link
+            to="/staff/register"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/register') 
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none' 
+              isActive('/staff/register')
+                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             <User size={18} className={isActive('/staff/register') ? 'text-indigo-600' : 'text-slate-400'} />
             <span className="text-sm">Registration</span>
           </Link>
-          
-          <Link 
-            to="/staff/sales" 
+
+          <Link
+            to="/staff/sales"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/sales') 
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none' 
+              isActive('/staff/sales')
+                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             <ShoppingBag size={18} className={isActive('/staff/sales') ? 'text-indigo-600' : 'text-slate-400'} />
             <span className="text-sm">Sales Terminal</span>
           </Link>
-          
-          <Link 
-            to="/staff/search" 
+
+          <Link
+            to="/staff/search"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/search') 
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none' 
+              isActive('/staff/search')
+                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             <History size={18} className={isActive('/staff/search') ? 'text-indigo-600' : 'text-slate-400'} />
             <span className="text-sm">Service History</span>
           </Link>
-          
-          <Link 
-            to="/staff/reports" 
+
+          <Link
+            to="/staff/reports"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/reports') 
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none' 
+              isActive('/staff/reports')
+                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
@@ -165,7 +177,7 @@ function StaffLayout() {
             <span className="text-sm">Analytics</span>
           </Link>
         </nav>
- 
+
         <div className="p-4 border-t border-slate-100">
           <button onClick={handleLogout} className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-200 font-semibold text-sm">
             <LogOut size={16} />
@@ -173,7 +185,7 @@ function StaffLayout() {
           </button>
         </div>
       </aside>
- 
+
       {/* Main Content */}
       <main className="flex-1 flex flex-col relative">
         {/* Top Header */}
@@ -182,7 +194,7 @@ function StaffLayout() {
              <History size={16} className="text-slate-400" />
              <input type="text" placeholder="Global search..." className="bg-transparent border-none outline-none text-sm text-slate-700 placeholder:text-slate-400 w-full" />
           </div>
- 
+
           <div className="flex items-center gap-4">
             <div className="hidden md:flex flex-col items-end">
                <span className="text-sm font-bold text-slate-800">{user.fullName || user.FullName || 'Guest User'}</span>
@@ -193,7 +205,7 @@ function StaffLayout() {
             </div>
           </div>
         </header>
-        
+
         <div className="p-8 lg:p-10 overflow-x-hidden">
           <Outlet />
         </div>
@@ -202,22 +214,39 @@ function StaffLayout() {
   );
 }
 
+// ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Landing Page */}
         <Route path="/" element={<LandingPage />} />
-        
-        {/* Auth & Public Customer Routes */}
-        <Route path="/login" element={<Login />} />
+
+        {/* Auth Routes */}
+        <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/cart" element={<CartPage />} />
+
+        {/* Legacy Public Customer Routes */}
+        <Route path="/cart"             element={<CartPage />} />
         <Route path="/customer/requests" element={
           <ProtectedRoute allowedRoles={['Customer']}>
             <PartRequests />
           </ProtectedRoute>
         } />
+
+        {/* ── Customer Portal (Sections 12, 13, 14) ────────────── */}
+        <Route path="/customer" element={
+          <ProtectedRoute allowedRoles={['Customer']}>
+            <CustomerLayout />
+          </ProtectedRoute>
+        }>
+          <Route path="dashboard"    element={<CustomerDashboard />} />
+          <Route path="appointments" element={<CustomerAppointments />} />
+          <Route path="parts"        element={<CustomerPartRequestsPage />} />
+          <Route path="history"      element={<CustomerHistory />} />
+          <Route path="profile"      element={<CustomerProfile />} />
+          <Route path="reviews"      element={<CustomerReviews />} />
+        </Route>
 
         {/* Admin Routes */}
         <Route path="/admin" element={
@@ -225,13 +254,13 @@ function App() {
             <MainLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<Dashboard />} />
-          <Route path="parts" element={<PartsInventory />} />
-          <Route path="vendors" element={<VendorsDirectory />} />
-          <Route path="requests" element={<CustomerRequests />} />
-          <Route path="purchase/new" element={<NewPurchaseOrder />} />
+          <Route index         element={<Dashboard />} />
+          <Route path="parts"           element={<PartsInventory />} />
+          <Route path="vendors"         element={<VendorsDirectory />} />
+          <Route path="requests"        element={<CustomerRequests />} />
+          <Route path="purchase/new"    element={<NewPurchaseOrder />} />
           <Route path="purchase/history" element={<PurchaseHistory />} />
-          <Route path="staff" element={<StaffManagement />} />
+          <Route path="staff"           element={<StaffManagement />} />
         </Route>
 
         {/* Staff Routes */}
@@ -240,13 +269,13 @@ function App() {
             <StaffLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<StaffDashboard />} />
-          <Route path="register" element={<RegisterCustomer />} />
-          <Route path="sales" element={<SalesTerminal />} />
-          <Route path="search" element={<CustomerSearch />} />
-          <Route path="customer/:id" element={<CustomerDetails />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="invoice/:id" element={<InvoiceView />} />
+          <Route index                 element={<StaffDashboard />} />
+          <Route path="register"       element={<RegisterCustomer />} />
+          <Route path="sales"          element={<SalesTerminal />} />
+          <Route path="search"         element={<CustomerSearch />} />
+          <Route path="customer/:id"   element={<CustomerDetails />} />
+          <Route path="reports"        element={<Reports />} />
+          <Route path="invoice/:id"    element={<InvoiceView />} />
         </Route>
       </Routes>
     </BrowserRouter>
