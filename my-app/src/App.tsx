@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { User, ShoppingBag, LayoutDashboard, History, LogOut, BarChart3 } from 'lucide-react';
 
 // Admin Imports
@@ -28,6 +28,34 @@ import PartRequests from './pages/Customer/PartRequests';
 import CustomerRequests from './pages/admin/CustomerRequests';
 
 import './App.css';
+
+interface ProtectedRouteProps {
+  children: React.ReactElement;
+  allowedRoles: string[];
+}
+
+function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const user = JSON.parse(userStr);
+  
+  let userRole = '';
+  const roleId = user.roleID ?? user.RoleID;
+  if (roleId === 1) userRole = 'Admin';
+  else if (roleId === 2) userRole = 'Staff';
+  else if (roleId === 3) userRole = 'Customer';
+
+  const isAllowed = allowedRoles.some(r => r.toLowerCase() === userRole.toLowerCase());
+  
+  if (!isAllowed) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
 
 // Staff Layout Component
 function StaffLayout() {
@@ -185,10 +213,18 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/customer/requests" element={<PartRequests />} />
+        <Route path="/customer/requests" element={
+          <ProtectedRoute allowedRoles={['Customer']}>
+            <PartRequests />
+          </ProtectedRoute>
+        } />
 
         {/* Admin Routes */}
-        <Route path="/admin" element={<MainLayout />}>
+        <Route path="/admin" element={
+          <ProtectedRoute allowedRoles={['Admin']}>
+            <MainLayout />
+          </ProtectedRoute>
+        }>
           <Route index element={<Dashboard />} />
           <Route path="parts" element={<PartsInventory />} />
           <Route path="vendors" element={<VendorsDirectory />} />
@@ -199,7 +235,11 @@ function App() {
         </Route>
 
         {/* Staff Routes */}
-        <Route path="/staff" element={<StaffLayout />}>
+        <Route path="/staff" element={
+          <ProtectedRoute allowedRoles={['Staff']}>
+            <StaffLayout />
+          </ProtectedRoute>
+        }>
           <Route index element={<StaffDashboard />} />
           <Route path="register" element={<RegisterCustomer />} />
           <Route path="sales" element={<SalesTerminal />} />

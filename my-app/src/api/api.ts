@@ -9,6 +9,19 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    const user = JSON.parse(userStr);
+    if (user.token || user.Token) {
+      config.headers.Authorization = `Bearer ${user.token || user.Token}`;
+    }
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
 export const staffApi = {
   registerCustomer: (data: any) => api.post('/Staff/register-customer', data),
   getCustomer: (id: number) => api.get(`/Staff/customer/${id}`),

@@ -37,7 +37,7 @@ const StaffDashboard = () => {
 
   const itemVariants = {
     hidden: { y: 15, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
+    visible: { y: 0, opacity: 1, transition: { type: 'spring' as const, stiffness: 100 } }
   };
 
   if (loading) return (
