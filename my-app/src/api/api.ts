@@ -40,6 +40,10 @@ export const appointmentApi = {
   create: (data: any) => api.post('/Appointments', data),
 };
 
+export const partsApi = {
+  getParts: () => api.get('/Parts'),
+};
+
 export const userApi = {
   login: (data: any) => api.post('/Customers/login', data),
   register: (data: any) => api.post('/Customers/register', data),

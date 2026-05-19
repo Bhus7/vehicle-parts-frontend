@@ -1,19 +1,80 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Settings, CheckCircle, Mail, Phone, MapPin, Search } from 'lucide-react';
+import { partsApi } from '../api/api';
 
 const LandingPage = () => {
   const [cartCount, setCartCount] = useState(0);
   const [addedItems, setAddedItems] = useState<number[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const products = [
-    { id: 1, name: "Premium Brake Pads", price: 45.99, category: "Brakes", image: "🛑" },
-    { id: 2, name: "Synthetic Motor Oil 5W-30", price: 29.50, category: "Fluids", image: "🛢️" },
-    { id: 3, name: "Iridium Spark Plugs (Set of 4)", price: 32.00, category: "Engine", image: "⚡" },
-    { id: 4, name: "Heavy Duty Alternator", price: 145.00, category: "Electrical", image: "🔋" },
-    { id: 5, name: "Performance Air Filter", price: 18.99, category: "Filters", image: "🌪️" },
-    { id: 6, name: "All-Season Wiper Blades", price: 22.50, category: "Exterior", image: "🌧️" },
-  ];
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const getCategoryEmoji = (category: string) => {
+    const cat = (category || '').toLowerCase();
+    if (cat.includes('brake')) return '🛑';
+    if (cat.includes('fluid') || cat.includes('oil')) return '🛢️';
+    if (cat.includes('engine') || cat.includes('plug')) return '⚡';
+    if (cat.includes('electric') || cat.includes('battery') || cat.includes('alternator')) return '🔋';
+    if (cat.includes('filter')) return '🌪️';
+    if (cat.includes('wiper') || cat.includes('exterior')) return '🌧️';
+    return '⚙️';
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await partsApi.getParts();
+      if (response.data && response.data.length > 0) {
+        const mapped = response.data.map((p: any) => ({
+          id: p.partID ?? p.partId,
+          name: p.partName,
+          price: p.unitPrice,
+          category: p.category,
+          image: getCategoryEmoji(p.category),
+        }));
+        setProducts(mapped);
+        setFilteredProducts(mapped);
+      } else {
+        useFallbackProducts();
+      }
+    } catch (error) {
+      console.error('Failed to fetch parts, using fallbacks', error);
+      useFallbackProducts();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const useFallbackProducts = () => {
+    const fallbacks = [
+      { id: 1, name: "Premium Brake Pads", price: 45.99, category: "Brakes", image: "🛑" },
+      { id: 2, name: "Synthetic Motor Oil 5W-30", price: 29.50, category: "Fluids", image: "🛢️" },
+      { id: 3, name: "Iridium Spark Plugs (Set of 4)", price: 32.00, category: "Engine", image: "⚡" },
+      { id: 4, name: "Heavy Duty Alternator", price: 145.00, category: "Electrical", image: "🔋" },
+      { id: 5, name: "Performance Air Filter", price: 18.99, category: "Filters", image: "🌪️" },
+      { id: 6, name: "All-Season Wiper Blades", price: 22.50, category: "Exterior", image: "🌧️" },
+    ];
+    setProducts(fallbacks);
+    setFilteredProducts(fallbacks);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (!query.trim()) {
+      setFilteredProducts(products);
+    } else {
+      const lower = query.toLowerCase();
+      setFilteredProducts(products.filter(p => 
+        p.name.toLowerCase().includes(lower) || 
+        (p.category || '').toLowerCase().includes(lower)
+      ));
+    }
+  };
 
   const handleAddToCart = (id: number) => {
     setCartCount(prev => prev + 1);
@@ -51,8 +112,27 @@ const LandingPage = () => {
                 )}
               </Link>
             </div>
-            <Link to="/login" className="text-sm px-4 py-2 text-slate-300 hover:text-white">Login</Link>
-            <Link to="/register" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow">Register</Link>
+            {localStorage.getItem('user') ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-slate-350">
+                  Hi, <b className="text-white">{JSON.parse(localStorage.getItem('user')!).fullName ?? JSON.parse(localStorage.getItem('user')!).FullName}</b>
+                </span>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('user');
+                    window.location.reload();
+                  }}
+                  className="text-xs px-3 py-1.5 bg-red-600/80 hover:bg-red-700 text-white rounded font-bold transition-all shadow"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="text-sm px-4 py-2 text-slate-300 hover:text-white">Login</Link>
+                <Link to="/register" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow">Register</Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -81,7 +161,13 @@ const LandingPage = () => {
             <Settings size={80} className="text-blue-500 mb-6 animate-spin-slow" />
             <h3 className="text-2xl font-bold text-white">Find Your Part</h3>
             <div className="w-full mt-6 flex gap-2">
-              <input type="text" placeholder="Search by part number or name..." className="flex-1 bg-slate-700 border border-slate-600 rounded px-4 py-2 text-white" />
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search by category or name..." 
+                className="flex-1 bg-slate-700 border border-slate-600 rounded px-4 py-2 text-white" 
+              />
               <button className="bg-blue-600 px-4 py-2 rounded text-white"><Search size={20}/></button>
             </div>
           </div>
@@ -97,31 +183,42 @@ const LandingPage = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map(product => (
-              <div key={product.id} className="bg-slate-900 border border-slate-700 rounded-lg p-6 flex flex-col shadow-lg hover:border-blue-500 transition-colors">
-                <div className="text-6xl text-center mb-4">{product.image}</div>
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">{product.category}</span>
-                  <span className="text-lg font-bold text-white">Rs. {product.price.toFixed(2)}</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-200 mb-6 flex-1">{product.name}</h3>
-                
-                <button 
-                  onClick={() => handleAddToCart(product.id)}
-                  className={`w-full py-3 rounded font-bold flex justify-center items-center gap-2 transition-colors ${
-                    addedItems.includes(product.id) 
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  {addedItems.includes(product.id) ? (
-                    <><CheckCircle size={18} /> Added to Cart</>
-                  ) : (
-                    <><ShoppingCart size={18} /> Add to Cart</>
-                  )}
-                </button>
+            {loading ? (
+              <div className="col-span-full text-center py-12 flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-slate-400 text-sm font-semibold tracking-wider">Fetching dynamic parts catalog...</p>
               </div>
-            ))}
+            ) : filteredProducts.length > 0 ? (
+              filteredProducts.map(product => (
+                <div key={product.id} className="bg-slate-900 border border-slate-700 rounded-lg p-6 flex flex-col shadow-lg hover:border-blue-500 transition-colors">
+                  <div className="text-6xl text-center mb-4">{product.image}</div>
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">{product.category}</span>
+                    <span className="text-lg font-bold text-white">Rs. {product.price.toFixed(2)}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-200 mb-6 flex-1">{product.name}</h3>
+                  
+                  <button 
+                    onClick={() => handleAddToCart(product.id)}
+                    className={`w-full py-3 rounded font-bold flex justify-center items-center gap-2 transition-colors ${
+                      addedItems.includes(product.id) 
+                        ? 'bg-green-600 hover:bg-green-700 text-white' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {addedItems.includes(product.id) ? (
+                      <><CheckCircle size={18} /> Added to Cart</>
+                    ) : (
+                      <><ShoppingCart size={18} /> Add to Cart</>
+                    )}
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16 text-slate-500 italic">
+                No matching parts found in the catalog.
+              </div>
+            )}
           </div>
         </div>
       </section>
