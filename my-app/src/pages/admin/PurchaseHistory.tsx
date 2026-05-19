@@ -209,7 +209,7 @@ function PurchaseHistory() {
                       <Typography variant="caption" sx={{ fontSize: '9px', fontWeight: '900', color: '#94a3b8', letterSpacing: '0.15em', display: 'block', mb: 1.5 }}>
                         SUPPLIER DETAILS
                       </Typography>
-                      <Typography variant="subtitle1" fontWeight="900" sx={{ letterSpacing: '-0.02em', mb: 0.5 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: '900', letterSpacing: '-0.02em', mb: 0.5 }}>
                         {selectedInvoice.vendorName || `Vendor ID: ${selectedInvoice.vendorId}`}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ fontSize: '12px' }}>
@@ -221,7 +221,7 @@ function PurchaseHistory() {
                       <Typography variant="caption" sx={{ fontSize: '9px', fontWeight: '900', color: '#94a3b8', letterSpacing: '0.15em', display: 'block', mb: 1.5 }}>
                         TRANSACTION DATE
                       </Typography>
-                      <Typography variant="subtitle1" fontWeight="900" sx={{ letterSpacing: '-0.02em', mb: 0.5 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: '900', letterSpacing: '-0.02em', mb: 0.5 }}>
                         {new Date(selectedInvoice.invoiceDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ fontSize: '12px' }}>
@@ -239,7 +239,7 @@ function PurchaseHistory() {
                           SETTLED & DEPOSITED
                         </Typography>
                       </Box>
-                      <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1, fontSize: '10px' }}>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, fontSize: '10px' }}>
                         Stock increment completed ✅
                       </Typography>
                     </Box>
@@ -306,7 +306,7 @@ function PurchaseHistory() {
                           <Typography sx={{ fontSize: '8px', fontWeight: '900', color: '#94a3b8', letterSpacing: '0.15em' }}>SETTLEMENT TOTAL</Typography>
                           <Typography sx={{ fontSize: '10px', fontWeight: '700', color: '#64748b' }}>NPR VALUATION</Typography>
                         </Box>
-                        <Typography variant="h5" fontWeight="900" sx={{ color: '#4f46e5', letterSpacing: '-0.04em' }}>
+                        <Typography variant="h5" sx={{ fontWeight: '900', color: '#4f46e5', letterSpacing: '-0.04em' }}>
                           Rs {selectedInvoice.totalAmount?.toLocaleString()}
                         </Typography>
                       </Box>

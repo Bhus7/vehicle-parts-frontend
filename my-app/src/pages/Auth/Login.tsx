@@ -22,19 +22,16 @@ const Login = () => {
       // Store user in localStorage
       localStorage.setItem('user', JSON.stringify(user));
       
-      // Navigate based on RoleID
-      // RoleID 1: Admin, RoleID 2: Staff, RoleID 3: Customer
-      if (user.roleID === 1) {
+      // Navigate dynamically based on RoleID
+      const rId = user.roleID ?? user.RoleID;
+      if (rId === 1) {
         navigate('/admin');
-      } else if (user.roleID === 2 || user.RoleID === 2) {
+      } else if (rId === 2) {
         navigate('/staff');
+      } else if (rId === 3) {
+        navigate('/');
       } else {
-        // Staff routing for now if RoleID logic differs
-        // Since original logic was navigating to '/', let's see. 
-        // Admin gets 1, Customer gets 3. Let's send Staff/Admin to their dashboards.
-        if (user.roleID === 1 || user.RoleID === 1) navigate('/admin');
-        else if (user.roleID === 3 || user.RoleID === 3) navigate('/');
-        else navigate('/staff');
+        navigate('/');
       }
     } catch (err: any) {
       setError(err.response?.data || 'Invalid credentials. Please try again.');

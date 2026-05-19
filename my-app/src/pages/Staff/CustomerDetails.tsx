@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Car, Calendar, ShoppingBag, ArrowLeft, Clock, Shield, ExternalLink, ChevronRight, User } from 'lucide-react';
+import { Phone, Mail, MapPin, Car, Calendar, ShoppingBag, ArrowLeft, Clock, ExternalLink, ChevronRight, User } from 'lucide-react';
 import { staffApi } from '../../api/api';
 import { Card, Button } from '../../components/ui-components';
 
