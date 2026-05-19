@@ -82,6 +82,8 @@ function Topbar() {
     // Redirect to Parts Inventory page which acts as stock reminder!
     if (notif.notificationType === 'LowStock') {
       navigate('/admin/parts');
+    } else if (notif.notificationType === 'CustomerRequest') {
+      navigate('/admin/requests');
     }
   };
 

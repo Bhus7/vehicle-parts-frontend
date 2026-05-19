@@ -6,12 +6,14 @@ import {
 } from '@mui/material';
 import { PlusCircle, Trash2, ShoppingCart, CheckCircle, HelpCircle } from 'lucide-react';
 import api from '../../api/axiosConfig';
+import { useLocation } from 'react-router-dom';
 
 interface Vendor { id: number; vendorName: string; }
 interface Part { partID: number; partName: string; unitPrice: number; stockQuantity: number; vendorID?: number | null; }
 interface LineItem { partID: number; partName: string; quantity: number; purchasePrice: number; }
 
 function NewPurchaseOrder() {
+  const location = useLocation();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [parts, setParts] = useState<Part[]>([]);
   const [selectedVendor, setSelectedVendor] = useState('');
@@ -22,11 +24,51 @@ function NewPurchaseOrder() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [requestId, setRequestId] = useState<number | null>(null);
 
   useEffect(() => {
     api.get('/Vendors').then((res) => setVendors(res.data)).catch(() => setVendors([]));
     api.get('/Parts').then((res) => setParts(res.data)).catch(() => setParts([]));
   }, []);
+
+  // Intercept redirected state from Customer Requests Catalog
+  useEffect(() => {
+    if (location.state && parts.length > 0) {
+      const stateObj = location.state as {
+        prefillPart?: string;
+        prefillQty?: number;
+        requestId?: number;
+        vendorId?: number;
+      };
+
+      if (stateObj.vendorId) {
+        setSelectedVendor(String(stateObj.vendorId));
+      }
+      if (stateObj.requestId) {
+        setRequestId(stateObj.requestId);
+      }
+
+      if (stateObj.prefillPart) {
+        const existingPart = parts.find(
+          p => p.partName.toLowerCase() === stateObj.prefillPart?.toLowerCase()
+        );
+
+        if (existingPart) {
+          const itemExists = lineItems.some(i => i.partID === existingPart.partID);
+          if (!itemExists) {
+            setLineItems([{
+              partID: existingPart.partID,
+              partName: existingPart.partName,
+              quantity: stateObj.prefillQty || 1,
+              purchasePrice: Number(existingPart.unitPrice * 0.7), // Default purchase price to 70% of sell price
+            }]);
+          }
+        } else {
+          setError(`Part '${stateObj.prefillPart}' does not exist in inventory. Please register it under Parts Inventory first!`);
+        }
+      }
+    }
+  }, [location.state, parts]);
 
   const selectedPartObj = parts.find(p => p.partID === Number(selectedPart));
 
@@ -76,6 +118,7 @@ function NewPurchaseOrder() {
         quantity: i.quantity,
         purchasePrice: i.purchasePrice,
       })),
+      requestId: requestId ? Number(requestId) : null,
     };
 
     try {
@@ -83,6 +126,7 @@ function NewPurchaseOrder() {
       setSuccess(true);
       setLineItems([]);
       setSelectedVendor('');
+      setRequestId(null);
     } catch (err: any) {
       setError(err.response?.data || 'Failed to create purchase invoice.');
     } finally {
