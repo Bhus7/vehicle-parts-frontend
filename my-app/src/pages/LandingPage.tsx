@@ -102,7 +102,7 @@ const LandingPage = () => {
                 <div className="text-6xl text-center mb-4">{product.image}</div>
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">{product.category}</span>
-                  <span className="text-lg font-bold text-white">${product.price.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-white">Rs. {product.price.toFixed(2)}</span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-200 mb-6 flex-1">{product.name}</h3>
                 

@@ -142,10 +142,6 @@ const Reports = () => {
             <Download size={18} />
             Export PDF
           </Button>
-          <Button variant="primary" className="gap-2">
-            <Calendar size={18} />
-            Q2 Summary
-          </Button>
         </div>
       </div>
 
@@ -248,6 +244,7 @@ const Reports = () => {
                   <tr>
                     <th className="px-8 py-5 text-xs font-bold uppercase tracking-wider text-slate-600">Invoice Ref</th>
                     <th className="px-8 py-5 text-xs font-bold uppercase tracking-wider text-slate-600">Beneficiary</th>
+                    <th className="px-8 py-5 text-xs font-bold uppercase tracking-wider text-slate-600">Created At</th>
                     <th className="px-8 py-5 text-xs font-bold uppercase tracking-wider text-slate-600">Amount Due</th>
                     <th className="px-8 py-5 text-xs font-bold uppercase tracking-wider text-slate-600">Risk Status</th>
                   </tr>
@@ -266,6 +263,9 @@ const Reports = () => {
                            <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">{p.customerName}</span>
                         </td>
                         <td className="px-8 py-6">
+                           <span className="text-xs font-mono text-slate-500">{(p.salesDate || p.createdAt) ? new Date(p.salesDate || p.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}</span>
+                        </td>
+                        <td className="px-8 py-6">
                            <span className="text-sm font-black text-rose-600">Rs. {p.finalAmount.toFixed(2)}</span>
                         </td>
                         <td className="px-8 py-6">
@@ -277,9 +277,9 @@ const Reports = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="px-8 py-20 text-center">
+                      <td colSpan={5} className="px-8 py-20 text-center">
                         <div className="flex flex-col items-center gap-4">
-                          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+                          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-650">
                              <BarChart2 size={32} />
                           </div>
                           <p className="text-slate-500 italic max-w-xs">No outstanding collections found. Financial health is optimal.</p>
@@ -434,6 +434,7 @@ const Reports = () => {
                         <tr className="border-b border-slate-300 text-slate-500 font-bold uppercase">
                           <th className="py-2">Invoice Ref</th>
                           <th className="py-2">Beneficiary</th>
+                          <th className="py-2">Created At</th>
                           <th className="py-2 text-right">Outstanding due</th>
                           <th className="py-2 text-right">Risk Assessment</th>
                         </tr>
@@ -444,13 +445,14 @@ const Reports = () => {
                             <tr key={p.salesInvoiceID} className="font-medium text-slate-700">
                               <td className="py-2.5 font-mono text-[10px]">#INV-0{p.salesInvoiceID}</td>
                               <td className="py-2.5 font-bold text-slate-900">{p.customerName}</td>
+                              <td className="py-2.5 font-mono text-[10px]">{(p.salesDate || p.createdAt) ? new Date(p.salesDate || p.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}</td>
                               <td className="py-2.5 text-right font-black text-slate-900">Rs. {p.finalAmount.toFixed(2)}</td>
                               <td className="py-2.5 text-right"><span className={`text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded ${getPrintRiskStatus(p.dueDate).className}`}>{getPrintRiskStatus(p.dueDate).label}</span></td>
                             </tr>
                           ))
                         ) : (
                           <tr>
-                            <td colSpan={4} className="py-6 text-center text-slate-400 italic">No credit risks detected. Ledger is fully settled.</td>
+                            <td colSpan={5} className="py-6 text-center text-slate-400 italic">No credit risks detected. Ledger is fully settled.</td>
                           </tr>
                         )}
                       </tbody>

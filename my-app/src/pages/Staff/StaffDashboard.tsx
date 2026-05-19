@@ -83,16 +83,16 @@ const StaffDashboard = () => {
       {/* Stats Cluster */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {statCards.map((stat, idx) => (
-          <motion.div key={idx} variants={itemVariants}>
-            <Card className="border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
-               <div className="p-5 flex items-center justify-between">
-                 <div className="space-y-1.5">
-                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider leading-none">{stat.label}</p>
-                   <h3 className="text-2xl font-bold text-slate-800">{stat.value}</h3>
-                 </div>
-                 <div className={`w-12 h-12 rounded-xl border flex items-center justify-center ${stat.color}`}>
-                    <stat.icon size={22} />
-                 </div>
+          <motion.div key={idx} variants={itemVariants} className="h-full">
+            <Card className="h-full border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
+               <div className="p-4 flex items-center justify-between h-full">
+                  <div className="space-y-1 min-w-0 flex-1 pr-2">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none truncate">{stat.label}</p>
+                    <h3 className="text-lg font-bold text-slate-800 truncate">{stat.value}</h3>
+                  </div>
+                  <div className={`w-9 h-9 rounded-lg border flex items-center justify-center ${stat.color} shrink-0`}>
+                     <stat.icon size={18} />
+                  </div>
                </div>
             </Card>
           </motion.div>

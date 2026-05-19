@@ -65,7 +65,7 @@ const CartPage = () => {
                   </div>
                   
                   <div className="text-center sm:text-right">
-                    <div className="text-xl font-bold text-white mb-2">${(item.price * item.quantity).toFixed(2)}</div>
+                    <div className="text-xl font-bold text-white mb-2">Rs. {(item.price * item.quantity).toFixed(2)}</div>
                     
                     <div className="flex items-center justify-center sm:justify-end gap-3">
                       <div className="flex items-center bg-slate-900 border border-slate-700 rounded">
@@ -91,22 +91,22 @@ const CartPage = () => {
               <div className="space-y-4 mb-6 text-slate-300">
                 <div className="flex justify-between">
                   <span>Subtotal ({cartItems.length} items)</span>
-                  <span className="font-bold text-white">${subtotal.toFixed(2)}</span>
+                  <span className="font-bold text-white">Rs. {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Estimated Tax</span>
-                  <span className="font-bold text-white">${tax.toFixed(2)}</span>
+                  <span className="font-bold text-white">Rs. {tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Standard Shipping</span>
-                  <span className="font-bold text-white">$5.99</span>
+                  <span className="font-bold text-white">Rs. 5.99</span>
                 </div>
               </div>
               
               <div className="border-t border-slate-700 pt-4 mb-8">
                 <div className="flex justify-between items-end">
                   <span className="text-lg font-bold text-white">Total</span>
-                  <span className="text-3xl font-black text-blue-500">${total.toFixed(2)}</span>
+                  <span className="text-3xl font-black text-blue-500">Rs. {total.toFixed(2)}</span>
                 </div>
               </div>
               
