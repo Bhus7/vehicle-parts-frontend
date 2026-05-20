@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Users, AlertCircle, Award, FileText, Download, Calendar, BarChart2, Info } from 'lucide-react';
+import { TrendingUp, Users, AlertCircle, Award, FileText, Download, BarChart2, Info } from 'lucide-react';
 import { staffApi } from '../../api/api';
 import { Card, Button } from '../../components/ui-components';
 

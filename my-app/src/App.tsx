@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { User, ShoppingBag, LayoutDashboard, History, LogOut, BarChart3 } from 'lucide-react';
+import { User, ShoppingBag, LayoutDashboard, History, LogOut, BarChart3, Menu, X } from 'lucide-react';
 
 // Admin Imports
 import MainLayout from './components/admin/Layout/MainLayout';
@@ -74,6 +75,11 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 function StaffLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const getInitials = (name: string) => {
@@ -98,102 +104,137 @@ function StaffLayout() {
     return location.pathname.startsWith(path);
   };
 
+  const renderSidebarContent = () => (
+    <>
+      <div className="p-8 flex items-center justify-between">
+        <Link to="/staff" className="group flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">
+             <span className="font-black text-white text-xl italic">A</span>
+          </div>
+          <h2 className="text-xl font-bold font-outfit tracking-tight text-slate-800">
+            AutoParts
+          </h2>
+        </Link>
+        <button 
+          onClick={() => setMobileMenuOpen(false)}
+          className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg"
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
+        <div className="px-4 py-2 mb-1">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Core Navigation</p>
+        </div>
+
+        <Link
+          to="/staff"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+            isActive('/staff')
+              ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <LayoutDashboard size={18} className={isActive('/staff') ? 'text-indigo-600' : 'text-slate-400'} />
+          <span className="text-sm">Overview</span>
+        </Link>
+
+        <Link
+          to="/staff/register"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+            isActive('/staff/register')
+              ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <User size={18} className={isActive('/staff/register') ? 'text-indigo-600' : 'text-slate-400'} />
+          <span className="text-sm">Registration</span>
+        </Link>
+
+        <Link
+          to="/staff/sales"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+            isActive('/staff/sales')
+              ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <ShoppingBag size={18} className={isActive('/staff/sales') ? 'text-indigo-600' : 'text-slate-400'} />
+          <span className="text-sm">Sales Terminal</span>
+        </Link>
+
+        <Link
+          to="/staff/search"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+            isActive('/staff/search')
+              ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <History size={18} className={isActive('/staff/search') ? 'text-indigo-600' : 'text-slate-400'} />
+          <span className="text-sm">Service History</span>
+        </Link>
+
+        <Link
+          to="/staff/reports"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+            isActive('/staff/reports')
+              ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <BarChart3 size={18} className={isActive('/staff/reports') ? 'text-indigo-600' : 'text-slate-400'} />
+          <span className="text-sm">Analytics</span>
+        </Link>
+      </nav>
+
+      <div className="p-4 border-t border-slate-100">
+        <button onClick={handleLogout} className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-200 font-semibold text-sm">
+          <LogOut size={16} />
+          <span>Logout</span>
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#f8fafc] font-sans text-slate-800 selection:bg-indigo-500/10">
-      {/* Sidebar */}
-      <aside className="w-72 shrink-0 bg-white border-r border-slate-200/80 flex flex-col h-screen sticky top-0 z-40 overflow-hidden">
-        <div className="p-8">
-          <Link to="/staff" className="group flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">
-               <span className="font-black text-white text-xl italic">A</span>
-            </div>
-            <h2 className="text-xl font-bold font-outfit tracking-tight text-slate-800">
-              AutoParts
-            </h2>
-          </Link>
-        </div>
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-72 shrink-0 bg-white border-r border-slate-200/80 flex flex-col h-screen sticky top-0 z-40 overflow-hidden">
+        {renderSidebarContent()}
+      </aside>
 
-        <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
-          <div className="px-4 py-2 mb-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Core Navigation</p>
-          </div>
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
-          <Link
-            to="/staff"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff')
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            <LayoutDashboard size={18} className={isActive('/staff') ? 'text-indigo-600' : 'text-slate-400'} />
-            <span className="text-sm">Overview</span>
-          </Link>
-
-          <Link
-            to="/staff/register"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/register')
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            <User size={18} className={isActive('/staff/register') ? 'text-indigo-600' : 'text-slate-400'} />
-            <span className="text-sm">Registration</span>
-          </Link>
-
-          <Link
-            to="/staff/sales"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/sales')
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            <ShoppingBag size={18} className={isActive('/staff/sales') ? 'text-indigo-600' : 'text-slate-400'} />
-            <span className="text-sm">Sales Terminal</span>
-          </Link>
-
-          <Link
-            to="/staff/search"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/search')
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            <History size={18} className={isActive('/staff/search') ? 'text-indigo-600' : 'text-slate-400'} />
-            <span className="text-sm">Service History</span>
-          </Link>
-
-          <Link
-            to="/staff/reports"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isActive('/staff/reports')
-                ? 'bg-indigo-50 text-indigo-600 font-semibold border-l-4 border-indigo-600 rounded-l-none'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            <BarChart3 size={18} className={isActive('/staff/reports') ? 'text-indigo-600' : 'text-slate-400'} />
-            <span className="text-sm">Analytics</span>
-          </Link>
-        </nav>
-
-        <div className="p-4 border-t border-slate-100">
-          <button onClick={handleLogout} className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-200 font-semibold text-sm">
-            <LogOut size={16} />
-            <span>Logout</span>
-          </button>
-        </div>
+      {/* Mobile Sidebar */}
+      <aside className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-white border-r border-slate-200/80 flex flex-col h-screen transition-transform duration-300 transform lg:hidden ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        {renderSidebarContent()}
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col relative">
+      <main className="flex-1 flex flex-col relative w-full overflow-x-hidden">
         {/* Top Header */}
-        <header className="h-[80px] bg-white border-b border-slate-200/80 px-8 flex items-center justify-between sticky top-0 z-30">
-          <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200/80 md:w-[400px]">
-             <History size={16} className="text-slate-400" />
-             <input type="text" placeholder="Global search..." className="bg-transparent border-none outline-none text-sm text-slate-700 placeholder:text-slate-400 w-full" />
+        <header className="h-[80px] bg-white border-b border-slate-200/80 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-4 flex-1">
+            <button 
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+            >
+              <Menu size={22} />
+            </button>
+            <div className="hidden sm:flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200/80 md:w-[400px]">
+               <History size={16} className="text-slate-400" />
+               <input type="text" placeholder="Global search..." className="bg-transparent border-none outline-none text-sm text-slate-700 placeholder:text-slate-400 w-full" />
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
@@ -207,7 +248,7 @@ function StaffLayout() {
           </div>
         </header>
 
-        <div className="p-8 lg:p-10 overflow-x-hidden">
+        <div className="p-4 md:p-8 lg:p-10 overflow-x-hidden">
           <Outlet />
         </div>
       </main>

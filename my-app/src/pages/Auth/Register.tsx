@@ -114,138 +114,142 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-12">
       <div className="max-w-2xl w-full">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-600/30">
-            <span className="text-white font-black text-2xl italic">A</span>
+        <div className="text-center mb-10">
+          <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100">
+            <span className="text-white font-bold text-xl tracking-wider">AP</span>
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight">Create your Account</h1>
-          <p className="text-slate-400 mt-2 text-sm">Join AutoParts to manage vehicles, appointments & part requests.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Create your Account</h1>
+          <p className="text-slate-500 mt-2 text-sm font-light">Join AutoParts to manage vehicles, appointments & part requests.</p>
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className={`flex-1 flex items-center gap-3 p-3 rounded-xl border transition-all ${step === 1 ? 'bg-blue-600/10 border-blue-500/40' : 'bg-slate-800 border-slate-700'}`}>
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-colors ${step === 1 ? 'bg-blue-600 text-white' : 'bg-emerald-500 text-white'}`}>
+        <div className="flex items-center gap-4 mb-8 max-w-md mx-auto">
+          <div className={`flex-1 flex items-center gap-3 p-3 rounded-xl border transition-all ${step === 1 ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-100'}`}>
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step === 1 ? 'bg-slate-900 text-white' : 'bg-emerald-500 text-white'}`}>
               {step === 1 ? '1' : '✓'}
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Step 1</p>
-              <p className={`text-sm font-bold ${step === 1 ? 'text-white' : 'text-slate-400'}`}>Personal Info</p>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Step 1</p>
+              <p className={`text-sm font-medium ${step === 1 ? 'text-slate-900' : 'text-slate-500'}`}>Personal Info</p>
             </div>
           </div>
-          <ChevronRight size={16} className="text-slate-600 shrink-0" />
-          <div className={`flex-1 flex items-center gap-3 p-3 rounded-xl border transition-all ${step === 2 ? 'bg-blue-600/10 border-blue-500/40' : 'bg-slate-800 border-slate-700'}`}>
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-colors ${step === 2 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-400'}`}>
+          <ChevronRight size={16} className="text-slate-300 shrink-0" />
+          <div className={`flex-1 flex items-center gap-3 p-3 rounded-xl border transition-all ${step === 2 ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-100'}`}>
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step === 2 ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}>
               2
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Step 2</p>
-              <p className={`text-sm font-bold ${step === 2 ? 'text-white' : 'text-slate-500'}`}>Vehicle Details</p>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Step 2</p>
+              <p className={`text-sm font-medium ${step === 2 ? 'text-slate-900' : 'text-slate-400'}`}>Vehicle Details</p>
             </div>
           </div>
         </div>
 
         {/* Error Banner */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm mb-6 font-medium">
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm mb-6 font-medium text-center">
             {error}
           </div>
         )}
 
-        <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
+        <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-100">
 
           {/* ── STEP 1: Personal Info ─────────────────────────────── */}
           {step === 1 && (
-            <div className="space-y-5">
-              <h2 className="text-lg font-bold text-white border-b border-slate-700 pb-3 flex items-center gap-2">
-                <User size={18} className="text-blue-400" /> Personal Information
+            <div className="space-y-6">
+              <h2 className="text-base font-semibold text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
+                <User size={18} className="text-slate-400" /> Personal Information
               </h2>
 
-              {/* Full Name */}
-              <div>
-                <label className="block text-sm font-bold text-slate-400 mb-2">Full Name</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3.5 text-slate-500" size={16} />
-                  <input
-                    id="reg-fullName"
-                    name="fullName"
-                    type="text"
-                    required
-                    autoComplete="name"
-                    value={form.fullName}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
-                  />
+              <div className="grid sm:grid-cols-2 gap-6">
+                {/* Full Name */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-3.5 text-slate-400" size={18} strokeWidth={1.5} />
+                    <input
+                      id="reg-fullName"
+                      name="fullName"
+                      type="text"
+                      required
+                      autoComplete="name"
+                      value={form.fullName}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-3.5 text-slate-400" size={18} strokeWidth={1.5} />
+                    <input
+                      id="reg-email"
+                      name="email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      placeholder="john@example.com"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-bold text-slate-400 mb-2">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 text-slate-500" size={16} />
-                  <input
-                    id="reg-email"
-                    name="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="john@example.com"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
-                  />
+              <div className="grid sm:grid-cols-2 gap-6">
+                {/* Phone */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Phone Number</label>
+                  <div className="relative">
+                    <Phone className="absolute left-3.5 top-3.5 text-slate-400" size={18} strokeWidth={1.5} />
+                    <input
+                      id="reg-phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      autoComplete="tel"
+                      value={form.phone}
+                      onChange={handleChange}
+                      placeholder="98XXXXXXXX"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-bold text-slate-400 mb-2">Phone Number</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3.5 text-slate-500" size={16} />
-                  <input
-                    id="reg-phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    autoComplete="tel"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="98XXXXXXXX"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
-                  />
-                </div>
-              </div>
-
-              {/* Address */}
-              <div>
-                <label className="block text-sm font-bold text-slate-400 mb-2">Address</label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3.5 text-slate-500" size={16} />
-                  <input
-                    id="reg-address"
-                    name="address"
-                    type="text"
-                    required
-                    autoComplete="street-address"
-                    value={form.address}
-                    onChange={handleChange}
-                    placeholder="Kathmandu, Nepal"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
-                  />
+                {/* Address */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Address</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3.5 top-3.5 text-slate-400" size={18} strokeWidth={1.5} />
+                    <input
+                      id="reg-address"
+                      name="address"
+                      type="text"
+                      required
+                      autoComplete="street-address"
+                      value={form.address}
+                      onChange={handleChange}
+                      placeholder="Kathmandu, Nepal"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Password row */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Password</label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3.5 text-slate-500" size={16} />
+                    <Lock className="absolute left-3.5 top-3.5 text-slate-400" size={18} strokeWidth={1.5} />
                     <input
                       id="reg-password"
                       name="password"
@@ -255,14 +259,14 @@ const Register = () => {
                       value={form.password}
                       onChange={handleChange}
                       placeholder="Min 6 characters"
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-400 mb-2">Confirm Password</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Confirm Password</label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3.5 text-slate-500" size={16} />
+                    <Lock className="absolute left-3.5 top-3.5 text-slate-400" size={18} strokeWidth={1.5} />
                     <input
                       id="reg-confirmPassword"
                       name="confirmPassword"
@@ -272,7 +276,7 @@ const Register = () => {
                       value={form.confirmPassword}
                       onChange={handleChange}
                       placeholder="Re-enter password"
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -281,26 +285,25 @@ const Register = () => {
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors mt-2"
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3.5 rounded-lg flex items-center justify-center gap-2 transition-colors mt-6"
               >
-                Next: Vehicle Details <ChevronRight size={18} />
+                Next: Vehicle Details <ChevronRight size={18} strokeWidth={1.5} />
               </button>
             </div>
           )}
 
           {/* ── STEP 2: Vehicle Details ───────────────────────────── */}
           {step === 2 && (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <h2 className="text-lg font-bold text-white border-b border-slate-700 pb-3 flex items-center gap-2">
-                <Car size={18} className="text-blue-400" /> Primary Vehicle Details
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <h2 className="text-base font-semibold text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
+                <Car size={18} className="text-slate-400" /> Primary Vehicle Details
               </h2>
 
-              {/* Vehicle Number & Type */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-bold text-slate-400 mb-2">Plate / Vehicle No.</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Plate / Vehicle No.</label>
                   <div className="relative">
-                    <Hash className="absolute left-3 top-3.5 text-slate-500" size={16} />
+                    <Hash className="absolute left-3.5 top-3.5 text-slate-400" size={18} strokeWidth={1.5} />
                     <input
                       id="reg-vehicleNumber"
                       name="vehicleNumber"
@@ -309,18 +312,18 @@ const Register = () => {
                       value={form.vehicleNumber}
                       onChange={handleChange}
                       placeholder="BA 1 PA 1234"
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-400 mb-2">Vehicle Type</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Vehicle Type</label>
                   <select
                     id="reg-vehicleType"
                     name="vehicleType"
                     value={form.vehicleType}
                     onChange={handleChange}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors text-slate-900"
                   >
                     {VEHICLE_TYPES.map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -329,10 +332,9 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Brand & Model */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-bold text-slate-400 mb-2">Brand / Make</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Brand / Make</label>
                   <input
                     id="reg-brand"
                     name="brand"
@@ -341,11 +343,11 @@ const Register = () => {
                     value={form.brand}
                     onChange={handleChange}
                     placeholder="Toyota"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-400 mb-2">Model</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Model</label>
                   <input
                     id="reg-model"
                     name="model"
@@ -354,14 +356,13 @@ const Register = () => {
                     value={form.model}
                     onChange={handleChange}
                     placeholder="Corolla"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
                   />
                 </div>
               </div>
 
-              {/* Year */}
               <div>
-                <label className="block text-sm font-bold text-slate-400 mb-2">Year of Manufacture</label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Year of Manufacture</label>
                 <input
                   id="reg-year"
                   name="year"
@@ -371,38 +372,36 @@ const Register = () => {
                   value={form.year}
                   onChange={handleChange}
                   placeholder="e.g. 2020"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors placeholder:text-slate-600"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3.5 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors placeholder:text-slate-400"
                 />
               </div>
 
-              {/* Condition Notes */}
               <div>
-                <label className="block text-sm font-bold text-slate-400 mb-2">Condition Notes <span className="text-slate-600 font-normal">(optional)</span></label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Condition Notes <span className="text-slate-400 font-normal normal-case tracking-normal">(optional)</span></label>
                 <textarea
                   id="reg-conditionNotes"
                   name="conditionNotes"
                   rows={3}
                   value={form.conditionNotes}
                   onChange={handleChange}
-                  placeholder="e.g. Minor scratches on rear bumper, battery recently replaced..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors resize-none placeholder:text-slate-600"
+                  placeholder="e.g. Minor scratches on rear bumper..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition-colors resize-none placeholder:text-slate-400"
                 />
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-4 pt-4">
                 <button
                   type="button"
                   onClick={() => { setStep(1); setError(''); }}
-                  className="flex-1 py-3.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition-colors"
+                  className="px-6 py-3.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-colors"
                 >
-                  ← Back
+                  Back
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
                   id="reg-submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors"
+                  className="flex-1 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-medium py-3.5 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
                   {loading ? (
                     <><Loader2 size={18} className="animate-spin" /> Creating Account...</>
@@ -415,9 +414,9 @@ const Register = () => {
           )}
         </div>
 
-        <p className="text-center text-slate-500 mt-6 text-sm">
+        <p className="text-center text-slate-500 mt-8 text-sm">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
+          <Link to="/login" className="text-slate-900 font-semibold hover:underline transition-colors">
             Sign In
           </Link>
         </p>

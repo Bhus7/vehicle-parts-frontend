@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Search, Plus, Minus, Trash2, CheckCircle2, AlertCircle, Package, ArrowRight, CreditCard, Wallet, Banknote, User as UserIcon } from 'lucide-react';
+import { ShoppingCart, Search, Plus, Minus, Trash2, CheckCircle2, AlertCircle, Package, ArrowRight, CreditCard, Wallet, Banknote, User as UserIcon, Mail, Check } from 'lucide-react';
 import { staffApi } from '../../api/api';
 import { Button, Card, Input } from '../../components/ui-components';
 
@@ -32,6 +32,26 @@ const SalesTerminal = () => {
 
   // Invoice Preview Modal State (Step 6)
   const [checkoutInvoice, setCheckoutInvoice] = useState<any>(null);
+
+  // Email states
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
+  const handleSendEmail = async () => {
+    if (!checkoutInvoice) return;
+    setSendingEmail(true);
+    try {
+      await staffApi.sendInvoiceEmail(checkoutInvoice.invoiceID);
+      setEmailSent(true);
+      setTimeout(() => setEmailSent(false), 3000);
+    } catch (error: any) {
+      console.error('Failed to send email:', error);
+      const backendError = error.response?.data?.message || error.response?.data || error.message;
+      alert(`Email dispatch failed: ${backendError}`);
+    } finally {
+      setSendingEmail(false);
+    }
+  };
 
   useEffect(() => {
     loadParts();
@@ -645,6 +665,20 @@ const SalesTerminal = () => {
                     className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-colors text-xs"
                   >
                     Print Receipt
+                  </button>
+                  <button
+                    onClick={handleSendEmail}
+                    disabled={sendingEmail}
+                    className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 disabled:opacity-50 transition-colors text-xs flex items-center gap-1.5"
+                  >
+                    {sendingEmail ? (
+                      <span className="w-3.5 h-3.5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                    ) : emailSent ? (
+                      <Check size={14} className="text-emerald-600" />
+                    ) : (
+                      <Mail size={14} className="text-slate-500" />
+                    )}
+                    <span>{emailSent ? 'Sent' : 'Email Customer'}</span>
                   </button>
                   <button
                     onClick={() => {

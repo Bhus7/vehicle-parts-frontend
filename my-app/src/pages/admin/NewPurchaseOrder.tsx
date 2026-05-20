@@ -4,7 +4,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableRow,
   IconButton, Divider, Chip, Alert, Snackbar
 } from '@mui/material';
-import { PlusCircle, Trash2, ShoppingCart, CheckCircle, HelpCircle } from 'lucide-react';
+import { PlusCircle, Trash2, ShoppingCart, CheckCircle } from 'lucide-react';
 import api from '../../api/axiosConfig';
 import { useLocation } from 'react-router-dom';
 
@@ -138,7 +138,7 @@ function NewPurchaseOrder() {
     <Box>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
           New Purchase Order
         </Typography>
         <Typography color="text.secondary">
@@ -151,7 +151,7 @@ function NewPurchaseOrder() {
         <Box>
           {/* Vendor Selection */}
           <Paper sx={{ p: 3, mb: 3, borderRadius: 3 }}>
-            <Typography variant="h6" fontWeight="bold" mb={2}>Step 1 — Select Vendor</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Step 1 — Select Vendor</Typography>
             <TextField
               select fullWidth label="Vendor / Supplier"
               value={selectedVendor}
@@ -170,7 +170,7 @@ function NewPurchaseOrder() {
 
           {/* Add Parts */}
           <Paper sx={{ p: 3, mb: 3, borderRadius: 3, opacity: selectedVendor ? 1 : 0.6 }}>
-            <Typography variant="h6" fontWeight="bold" mb={1}>Step 2 — Add Parts</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Step 2 — Add Parts</Typography>
             {!selectedVendor && (
               <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
                 Please select a Vendor first to view and add their associated parts.
@@ -195,7 +195,7 @@ function NewPurchaseOrder() {
                 {filteredParts.map((p) => (
                   <MenuItem key={p.partID} value={p.partID}>
                     {p.partName}
-                    <Typography variant="caption" color="text.secondary" ml={1}>
+                    <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
                       (Stock: {p.stockQuantity})
                     </Typography>
                   </MenuItem>
@@ -205,13 +205,13 @@ function NewPurchaseOrder() {
                 type="number" label="Quantity" value={quantity}
                 disabled={!selectedVendor}
                 onChange={(e) => setQuantity(e.target.value)}
-                inputProps={{ min: 1 }}
+                {...({ inputProps: { min: 1 } } as any)}
               />
               <TextField
                 type="number" label="Unit Price (Rs)" value={purchasePrice}
                 disabled={!selectedVendor}
                 onChange={(e) => setPurchasePrice(e.target.value)}
-                inputProps={{ min: 0.01, step: 0.01 }}
+                {...({ inputProps: { min: 0.01, step: 0.01 } } as any)}
               />
               <Button
                 variant="contained" onClick={handleAddItem}
@@ -223,7 +223,7 @@ function NewPurchaseOrder() {
               </Button>
             </Box>
             {selectedPartObj && (
-              <Box mt={1}>
+              <Box sx={{ mt: 1 }}>
                 <Chip label={`Current stock: ${selectedPartObj.stockQuantity} units`} size="small" color="info" variant="outlined" />
               </Box>
             )}
@@ -232,7 +232,7 @@ function NewPurchaseOrder() {
           {/* Line Items Table */}
           {lineItems.length > 0 && (
             <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" fontWeight="bold" mb={2}>Step 3 — Review Items</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Step 3 — Review Items</Typography>
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'action.hover' }}>
@@ -272,30 +272,30 @@ function NewPurchaseOrder() {
           <Paper sx={{ p: 3, borderRadius: 3, position: 'sticky', top: 24 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <ShoppingCart size={20} />
-              <Typography variant="h6" fontWeight="bold">Order Summary</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Order Summary</Typography>
             </Box>
             <Divider sx={{ mb: 2 }} />
 
             {lineItems.length === 0 ? (
-              <Typography color="text.secondary" fontSize={14} textAlign="center" py={3}>
+              <Typography color="text.secondary" sx={{ fontSize: 14, textAlign: 'center', py: 3 }}>
                 No items added yet.
               </Typography>
             ) : (
               <>
                 {lineItems.map((item) => (
                   <Box key={item.partID} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography fontSize={13} noWrap sx={{ maxWidth: 180 }}>{item.partName} ×{item.quantity}</Typography>
-                    <Typography fontSize={13} fontWeight="medium">Rs {(item.quantity * item.purchasePrice).toLocaleString()}</Typography>
+                    <Typography noWrap sx={{ fontSize: 13, maxWidth: 180 }}>{item.partName} ×{item.quantity}</Typography>
+                    <Typography sx={{ fontSize: 13, fontWeight: 'medium' }}>Rs {(item.quantity * item.purchasePrice).toLocaleString()}</Typography>
                   </Box>
                 ))}
                 <Divider sx={{ my: 2 }} />
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="h6" fontWeight="bold">Grand Total</Typography>
-                  <Typography variant="h6" fontWeight="bold" color="primary">
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Grand Total</Typography>
+                  <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
                     Rs {grandTotal.toLocaleString()}
                   </Typography>
                 </Box>
-                <Box mt={1} mb={3}>
+                <Box sx={{ mt: 1, mb: 3 }}>
                   <Chip
                     label={`${lineItems.length} part type(s) · ${lineItems.reduce((s, i) => s + i.quantity, 0)} units total`}
                     size="small" color="success" variant="outlined"
@@ -317,7 +317,7 @@ function NewPurchaseOrder() {
             >
               {loading ? 'Submitting...' : 'Submit Purchase Invoice'}
             </Button>
-            <Typography variant="caption" color="text.secondary" display="block" textAlign="center" mt={1}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
               Stock will be updated automatically upon submission.
             </Typography>
           </Paper>
