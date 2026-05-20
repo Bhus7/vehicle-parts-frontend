@@ -1,7 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from 'recharts';
+
 import api from '../../api/axiosConfig';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -70,24 +68,7 @@ function KpiCard({
   );
 }
 
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{
-      background: '#1e293b', color: '#f1f5f9', padding: '10px 16px',
-      borderRadius: 10, fontSize: 13, lineHeight: 1.8,
-    }}>
-      <strong style={{ display: 'block', marginBottom: 4, color: '#f29f67' }}>{label}</strong>
-      {payload.map((p: any) => (
-        <div key={p.dataKey}>
-          <span style={{ color: p.color }}>■ </span>
-          {p.name}: <strong>{fmt(p.value)}</strong>
-        </div>
-      ))}
-    </div>
-  );
-};
+
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function FinancialReports() {
@@ -131,8 +112,6 @@ export default function FinancialReports() {
     }
   }, [tab, selectedDate, selectedYear, selectedMonth]);
 
-  useEffect(() => { fetchReport(); }, [fetchReport]);
-
   const periodLabel =
     tab === 'daily'   ? selectedDate :
     tab === 'monthly' ? `${MONTHS.find(m => m.value === selectedMonth)?.label} ${selectedYear}` :
@@ -143,7 +122,7 @@ export default function FinancialReports() {
       {/* ── Page Header ── */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: '-0.5px' }}>
-          📊 Financial Reports
+          Financial Reports
         </h1>
         <p style={{ margin: '6px 0 0', color: '#64748b', fontSize: 14 }}>
           Generate and view daily, monthly, and yearly financial summaries.
@@ -231,7 +210,7 @@ export default function FinancialReports() {
             transition: 'opacity .2s',
           }}
         >
-          {loading ? '⏳ Loading…' : '🔄 Generate Report'}
+          {loading ? 'Loading…' : 'Generate Report'}
         </button>
 
         {data && (
@@ -247,7 +226,7 @@ export default function FinancialReports() {
           background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c',
           borderRadius: 10, padding: '12px 20px', marginBottom: 24, fontSize: 14,
         }}>
-          ⚠️ {error}
+          {error}
         </div>
       )}
 
@@ -260,55 +239,18 @@ export default function FinancialReports() {
               value={fmt(data.totalRevenue)}
               sub={`${data.invoiceCount} invoice(s) issued`}
               color="#22c55e"
-              icon="💰"
+              icon=""
             />
             <KpiCard
               title="Total Expenses"
               value={fmt(data.totalExpenses)}
               sub="Purchase invoices"
               color="#f97316"
-              icon="🛒"
-            />
-            <KpiCard
-              title="Net Profit"
-              value={fmt(data.netProfit)}
-              sub={data.netProfit >= 0 ? '✅ Profitable' : '❌ Net loss'}
-              color={data.netProfit >= 0 ? '#3b82f6' : '#ef4444'}
-              icon="📈"
+              icon=""
             />
           </div>
 
-          {/* ── Charts Row ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 28 }}>
-            {/* Bar Chart */}
-            <div style={cardStyle}>
-              <h2 style={cardTitleStyle}>Revenue vs Expenses</h2>
-              <p style={{ margin: '0 0 16px', fontSize: 13, color: '#94a3b8' }}>
-                Breakdown for {periodLabel}
-              </p>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={data.breakdown}
-                  margin={{ top: 5, right: 10, bottom: 5, left: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fontSize: 11, fill: '#94a3b8' }}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} tickFormatter={v => `Rs.${(v/1000).toFixed(0)}k`} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend
-                    wrapperStyle={{ fontSize: 13 }}
-                    formatter={(value) => <span style={{ color: '#475569' }}>{value}</span>}
-                  />
-                  <Bar dataKey="revenue" name="Revenue" fill="#22c55e" radius={[5, 5, 0, 0]} maxBarSize={40} />
-                  <Bar dataKey="expenses" name="Expenses" fill="#f97316" radius={[5, 5, 0, 0]} maxBarSize={40} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          {/* ── Charts Row (Removed) ── */}
 
           {/* ── Detail Table ── */}
           <div style={cardStyle}>
@@ -317,13 +259,15 @@ export default function FinancialReports() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
-                    {['Period', 'Revenue', 'Expenses', 'Net'].map(col => (
+                    {['Period', 'Revenue', 'Expenses'].map(col => (
                       <th key={col} style={thStyle}>{col}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {data.breakdown.map((row, idx) => {
+                  {data.breakdown
+                    .filter(row => row.revenue > 0 || row.expenses > 0)
+                    .map((row, idx) => {
                     const net = row.revenue - row.expenses;
                     return (
                       <tr
@@ -333,26 +277,22 @@ export default function FinancialReports() {
                         <td style={tdStyle}><strong>{row.label}</strong></td>
                         <td style={{ ...tdStyle, color: '#22c55e', fontWeight: 600 }}>{fmt(row.revenue)}</td>
                         <td style={{ ...tdStyle, color: '#f97316', fontWeight: 600 }}>{fmt(row.expenses)}</td>
-                        <td style={{
-                          ...tdStyle, fontWeight: 700,
-                          color: net >= 0 ? '#3b82f6' : '#ef4444',
-                        }}>
-                          {net >= 0 ? '+' : ''}{fmt(net)}
-                        </td>
                       </tr>
                     );
                   })}
+                  {/* Empty state if no data */}
+                  {data.breakdown.filter(row => row.revenue > 0 || row.expenses > 0).length === 0 && (
+                    <tr>
+                      <td colSpan={3} style={{ padding: '24px', textAlign: 'center', color: '#94a3b8', fontStyle: 'italic' }}>
+                        No transactions found for this period.
+                      </td>
+                    </tr>
+                  )}
                   {/* Totals row */}
                   <tr style={{ background: '#1e293b', color: '#fff' }}>
                     <td style={{ ...tdStyle, color: '#fff', fontWeight: 800 }}>TOTAL</td>
                     <td style={{ ...tdStyle, color: '#4ade80', fontWeight: 800 }}>{fmt(data.totalRevenue)}</td>
                     <td style={{ ...tdStyle, color: '#fb923c', fontWeight: 800 }}>{fmt(data.totalExpenses)}</td>
-                    <td style={{
-                      ...tdStyle, fontWeight: 800,
-                      color: data.netProfit >= 0 ? '#60a5fa' : '#f87171',
-                    }}>
-                      {data.netProfit >= 0 ? '+' : ''}{fmt(data.netProfit)}
-                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -364,7 +304,7 @@ export default function FinancialReports() {
       {/* ── Loading skeleton ── */}
       {loading && !data && (
         <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8', fontSize: 16 }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>⏳</div>
+          <div style={{ fontSize: 40, marginBottom: 16 }}></div>
           Fetching report data…
         </div>
       )}
