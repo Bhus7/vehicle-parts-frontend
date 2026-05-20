@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-  PieChart, Pie, Cell,
 } from 'recharts';
 import api from '../../api/axiosConfig';
 
@@ -18,8 +17,6 @@ interface ReportData {
   totalExpenses: number;
   netProfit: number;
   invoiceCount: number;
-  paidAmount: number;
-  pendingAmount: number;
   breakdown: BreakdownItem[];
 }
 
@@ -41,8 +38,6 @@ const MONTHS = [
   { value: 9, label: 'September' },{ value: 10, label: 'October' },
   { value: 11, label: 'November' },{ value: 12, label: 'December' },
 ];
-
-const PIE_COLORS = ['#22c55e', '#f97316'];
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KpiCard({
@@ -137,14 +132,6 @@ export default function FinancialReports() {
   }, [tab, selectedDate, selectedYear, selectedMonth]);
 
   useEffect(() => { fetchReport(); }, [fetchReport]);
-
-  // Pie data
-  const pieData = data
-    ? [
-        { name: 'Paid', value: Number(data.paidAmount) || 0 },
-        { name: 'Pending', value: Number(data.pendingAmount) || 0 },
-      ]
-    : [];
 
   const periodLabel =
     tab === 'daily'   ? selectedDate :
@@ -289,17 +276,10 @@ export default function FinancialReports() {
               color={data.netProfit >= 0 ? '#3b82f6' : '#ef4444'}
               icon="📈"
             />
-            <KpiCard
-              title="Amount Collected"
-              value={fmt(data.paidAmount)}
-              sub={`Pending: ${fmt(data.pendingAmount)}`}
-              color="#8b5cf6"
-              icon="🏦"
-            />
           </div>
 
           {/* ── Charts Row ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 20, marginBottom: 28 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 28 }}>
             {/* Bar Chart */}
             <div style={cardStyle}>
               <h2 style={cardTitleStyle}>Revenue vs Expenses</h2>
@@ -327,37 +307,6 @@ export default function FinancialReports() {
                   <Bar dataKey="expenses" name="Expenses" fill="#f97316" radius={[5, 5, 0, 0]} maxBarSize={40} />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-
-            {/* Pie Chart */}
-            <div style={{ ...cardStyle, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <h2 style={cardTitleStyle}>Payment Status</h2>
-              <p style={{ margin: '0 0 8px', fontSize: 13, color: '#94a3b8' }}>Paid vs Pending</p>
-              <PieChart width={220} height={220}>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={95}
-                  paddingAngle={3}
-                  dataKey="value"
-                >
-                  {pieData.map((_, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v: any) => fmt(Number(v))} />
-              </PieChart>
-              <div style={{ display: 'flex', gap: 20, marginTop: 8 }}>
-                {pieData.map((d, i) => (
-                  <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: PIE_COLORS[i] }} />
-                    <span style={{ color: '#475569', fontWeight: 600 }}>{d.name}</span>
-                    <span style={{ color: '#94a3b8' }}>{fmt(d.value)}</span>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
