@@ -3,8 +3,7 @@ import {
   Box, IconButton, Badge, Avatar, useTheme, Menu, MenuItem,
   ListItemIcon, ListItemText, Typography, Button, Tooltip
 } from '@mui/material';
-import { Bell, Moon, Sun, User, LogOut, Settings, RefreshCw, Eye, EyeOff, Package } from 'lucide-react';
-import { useThemeContext } from '../../../contexts/ThemeContextProvider';
+import { Bell, LogOut, RefreshCw, Eye, EyeOff, Package, Menu as MenuIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/axiosConfig';
 
@@ -17,10 +16,14 @@ interface Notification {
   isRead: boolean;
 }
 
-function Topbar() {
+interface TopbarProps {
+  handleDrawerToggle?: () => void;
+}
+
+function Topbar({ handleDrawerToggle }: TopbarProps) {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { toggleTheme, isDarkMode } = useThemeContext();
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
   
@@ -129,8 +132,8 @@ function Topbar() {
         height: 70,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        px: 4,
+        justifyContent: { xs: 'space-between', md: 'flex-end' },
+        px: { xs: 2, sm: 4 },
         bgcolor: theme.palette.background.default,
         borderBottom: `1px solid ${theme.palette.divider}`,
         position: 'sticky',
@@ -138,6 +141,16 @@ function Topbar() {
         zIndex: 10,
       }}
     >
+      <IconButton
+        color="inherit"
+        aria-label="open drawer"
+        edge="start"
+        onClick={handleDrawerToggle}
+        sx={{ mr: 2, display: { md: 'none' } }}
+      >
+        <MenuIcon size={20} />
+      </IconButton>
+
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <IconButton color="inherit" onClick={handleNotifOpen}>
           <Badge badgeContent={unreadCount} color="primary" sx={{ '& .MuiBadge-badge': { bgcolor: '#F29F67', color: '#fff' } }}>
@@ -158,7 +171,7 @@ function Topbar() {
         >
           <Box sx={{ px: 2, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${theme.palette.divider}` }}>
             <Box>
-              <Typography fontWeight="bold" variant="body1">Notifications</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Notifications</Typography>
               <Typography variant="caption" color="text.secondary">{unreadCount} unread alert(s)</Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 0.5 }}>
@@ -246,14 +259,6 @@ function Topbar() {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>
-            <ListItemIcon><User size={18} /></ListItemIcon>
-            <ListItemText primary="My Profile" />
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <ListItemIcon><Settings size={18} /></ListItemIcon>
-            <ListItemText primary="Settings" />
-          </MenuItem>
           <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
             <ListItemIcon><LogOut size={18} /></ListItemIcon>
             <ListItemText primary="Logout" />

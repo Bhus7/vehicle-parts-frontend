@@ -3,7 +3,7 @@ import {
   Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Button, Chip, Dialog, DialogContent, DialogActions, Typography, Divider, IconButton
 } from '@mui/material';
-import { Eye, Calendar, User, ShoppingBag, X, Printer, Hash, CreditCard } from 'lucide-react';
+import { Eye, ShoppingBag, X, Printer, Hash } from 'lucide-react';
 import api from '../../api/axiosConfig';
 
 interface Part {
@@ -154,7 +154,7 @@ function PurchaseHistory() {
       </TableContainer>
 
       {/* Invoice Details Dialog Modal */}
-      <Dialog open={detailsOpen} onClose={handleCloseDetails} fullWidth maxWidth="md" PaperProps={{ sx: { borderRadius: '2rem', overflow: 'hidden' } }}>
+      <Dialog open={detailsOpen} onClose={handleCloseDetails} fullWidth maxWidth="md" {...({ PaperProps: { sx: { borderRadius: '2rem', overflow: 'hidden' } } } as any)}>
         {selectedInvoice && (
           <>
             {/* Header Dialog Controls */}
@@ -174,11 +174,11 @@ function PurchaseHistory() {
                 {/* Printable Invoice Header Strip */}
                 <Box sx={{ bgcolor: '#0f172a', p: { xs: 4, md: 5 }, color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ width: 48, height: 48, borderRadius: '1rem', bgcolor: '#4f46e5', display: 'flex', alignItems: 'center', justifyContext: 'center', display: 'flex', justifyContent: 'center' }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: '1rem', bgcolor: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <span style={{ fontSize: '1.5rem', fontWeight: '900', fontStyle: 'italic', color: '#fff' }}>A</span>
                     </Box>
                     <Box>
-                      <Typography variant="h6" fontWeight="900" sx={{ letterSpacing: '-0.05em', lineHeight: 1, m: 0 }}>
+                      <Typography variant="h6" sx={{ fontWeight: '900', letterSpacing: '-0.05em', lineHeight: 1, m: 0 }}>
                         AUTOPARTS
                       </Typography>
                       <Typography variant="caption" sx={{ letterSpacing: '0.15em', fontWeight: '900', color: '#64748b', fontSize: '8px' }}>
@@ -191,7 +191,7 @@ function PurchaseHistory() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#64748b', fontSize: '9px', fontWeight: '900', letterSpacing: '0.15em', justifyContent: 'flex-end', mb: 0.5 }}>
                       <Hash size={11} /> PURCHASE REF
                     </Box>
-                    <Typography variant="h5" fontWeight="900" sx={{ letterSpacing: '-0.03em', color: '#fff', m: 0 }}>
+                    <Typography variant="h5" sx={{ fontWeight: '900', letterSpacing: '-0.03em', color: '#fff', m: 0 }}>
                       PINV-{selectedInvoice.id.toString().padStart(6, '0')}
                     </Typography>
                     <Typography variant="caption" sx={{ color: '#818cf8', fontWeight: '700', fontSize: '10px' }}>

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext } from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import { lightTheme, darkTheme } from '../theme/theme';
+import { lightTheme } from '../theme/theme';
 
 interface ThemeContextType {
   toggleTheme: () => void;

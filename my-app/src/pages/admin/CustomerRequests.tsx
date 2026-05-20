@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Typography, Paper, Table, TableBody, TableCell,
   TableHead, TableRow, MenuItem, Select, Button, Chip,
-  FormControl, InputLabel, Alert, CircularProgress, Tooltip
+  FormControl, InputLabel, Alert, CircularProgress
 } from '@mui/material';
-import { ClipboardList, ArrowRight, User, ShoppingCart, HelpCircle } from 'lucide-react';
+import { ClipboardList, User, ShoppingCart, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axiosConfig';
 
@@ -116,7 +116,7 @@ function CustomerRequests() {
           <ClipboardList size={28} />
         </Box>
         <Box>
-          <Typography variant="h4" fontWeight="bold">
+          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
             Customer Part Requests
           </Typography>
           <Typography color="text.secondary">
@@ -136,7 +136,7 @@ function CustomerRequests() {
           {requests.length === 0 ? (
             <Box sx={{ py: 6, textAlign: 'center', color: 'text.secondary' }}>
               <HelpCircle size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-              <Typography variant="h6" fontWeight="bold">No Requests Found</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>No Requests Found</Typography>
               <Typography variant="body2">When customers request out-of-stock items, they will appear here.</Typography>
             </Box>
           ) : (
@@ -166,7 +166,7 @@ function CustomerRequests() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <User size={16} className="text-slate-400" />
                         <Box>
-                          <Typography variant="body2" fontWeight="bold">
+                          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                             {req.user?.fullName || 'Customer'}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
@@ -175,11 +175,11 @@ function CustomerRequests() {
                         </Box>
                       </Box>
                     </TableCell>
-                    <TableCell fontWeight="bold">{req.partName}</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>{req.partName}</TableCell>
                     <TableCell>
                       <Chip label={req.category} size="small" variant="outlined" />
                     </TableCell>
-                    <TableCell fontWeight="bold">{req.quantity}</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>{req.quantity}</TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {req.notes || <span style={{ color: '#ccc', fontStyle: 'italic' }}>None</span>}
@@ -188,7 +188,7 @@ function CustomerRequests() {
                     <TableCell>{getStatusChip(req.status)}</TableCell>
                     <TableCell>
                       {req.vendor ? (
-                        <Typography variant="body2" fontWeight="medium">
+                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                           {req.vendor.vendorName}
                         </Typography>
                       ) : req.status === 'Pending' ? (

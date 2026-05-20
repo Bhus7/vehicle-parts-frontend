@@ -268,7 +268,6 @@ export default function FinancialReports() {
                   {data.breakdown
                     .filter(row => row.revenue > 0 || row.expenses > 0)
                     .map((row, idx) => {
-                    const net = row.revenue - row.expenses;
                     return (
                       <tr
                         key={row.label}

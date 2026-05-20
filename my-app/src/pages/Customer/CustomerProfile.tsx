@@ -407,7 +407,7 @@ const CustomerProfile = () => {
         )}
 
         {/* Vehicles List */}
-        {(!(profile?.vehicles || profile?.Vehicles) || (profile.vehicles || profile.Vehicles).length === 0) ? (
+        {(!(profile?.vehicles || (profile as any)?.Vehicles) || (profile?.vehicles || (profile as any)?.Vehicles).length === 0) ? (
           <div className="bg-slate-800 border border-slate-700 rounded-2xl p-10 text-center">
             <Car size={36} className="mx-auto text-slate-700 mb-3" />
             <p className="font-bold text-white">No vehicles registered</p>
@@ -415,7 +415,7 @@ const CustomerProfile = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {(profile.vehicles || profile.Vehicles).map((v: any) => (
+            {((profile?.vehicles || (profile as any)?.Vehicles) || []).map((v: any) => (
               <div key={v.vehicleID || v.VehicleID}>
                 {editVehicleId === (v.vehicleID || v.VehicleID) ? (
                   /* Inline edit form */

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme, Drawer } from '@mui/material';
 import { LayoutDashboard, Package, Users, ShoppingCart, History, ShieldAlert, ClipboardList, FileBarChart2 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -14,26 +14,26 @@ const navItems = [
   { text: 'Financial Reports', icon: <FileBarChart2 size={20} />, path: '/admin/reports' },
 ];
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  handleDrawerToggle?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, handleDrawerToggle }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
-  return (
-    <Box
-      sx={{
-        width: 260,
-        flexShrink: 0,
-        bgcolor: '#1E1E2C', // Dark Navy always for Sidebar
-        color: '#FFFFFF',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        left: 0,
-        top: 0,
-      }}
-    >
+  React.useEffect(() => {
+    if (mobileOpen && handleDrawerToggle) {
+      handleDrawerToggle();
+    }
+  }, [location.pathname]);
+
+  const drawerWidth = 260;
+
+  const drawerContent = (
+    <>
       <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
         <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: theme.palette.primary.main }} />
         <Box component="span" sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
@@ -72,7 +72,54 @@ const Sidebar: React.FC = () => {
           );
         })}
       </List>
-    </Box>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+            bgcolor: '#1E1E2C', // Dark Navy always for Sidebar
+            color: '#FFFFFF',
+          },
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+
+      {/* Desktop Fixed Box */}
+      <Box
+        component="nav"
+        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+      >
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            width: drawerWidth,
+            flexDirection: 'column',
+            bgcolor: '#1E1E2C', // Dark Navy always for Sidebar
+            color: '#FFFFFF',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+          }}
+        >
+          {drawerContent}
+        </Box>
+      </Box>
+    </>
   );
 };
 

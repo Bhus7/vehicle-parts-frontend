@@ -16,7 +16,7 @@ const RegisterCustomer = () => {
     brand: '',
     model: '',
     year: new Date().getFullYear(),
-    vehicleType: '',
+    vehicleType: 'Car',
     conditionNotes: '',
   });
 
@@ -47,7 +47,7 @@ const RegisterCustomer = () => {
       setFormData({
         fullName: '', email: '', phone: '', password: '', confirmPassword: '', address: '',
         vehicleNumber: '', brand: '', model: '', year: new Date().getFullYear(),
-        vehicleType: '', conditionNotes: ''
+        vehicleType: 'Car', conditionNotes: ''
       });
     } catch (error: any) {
       setStatus({ 
@@ -216,11 +216,9 @@ const RegisterCustomer = () => {
                       onChange={handleChange}
                       className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-800 outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/50 transition-all font-sans shadow-sm"
                     >
-                      <option value="">Select Type</option>
-                      <option value="Sedan">Sedan</option>
-                      <option value="SUV">SUV</option>
-                      <option value="Bike">Bike</option>
-                      <option value="Truck">Truck</option>
+                      {['Car', 'Bike', 'Truck', 'Van', 'SUV', 'Other'].map(type => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
                     </select>
                   </div>
                 </div>
