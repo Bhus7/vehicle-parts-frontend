@@ -9,6 +9,7 @@ import VendorsDirectory from './pages/admin/VendorsDirectory';
 import NewPurchaseOrder from './pages/admin/NewPurchaseOrder';
 import PurchaseHistory from './pages/admin/PurchaseHistory';
 import StaffManagement from './pages/admin/StaffManagement';
+import FinancialReports from './pages/admin/FinancialReports';
 
 // Staff Imports
 import LandingPage from './pages/LandingPage';
@@ -261,6 +262,7 @@ function App() {
           <Route path="purchase/new"    element={<NewPurchaseOrder />} />
           <Route path="purchase/history" element={<PurchaseHistory />} />
           <Route path="staff"           element={<StaffManagement />} />
+          <Route path="reports"         element={<FinancialReports />} />
         </Route>
 
         {/* Staff Routes */}
