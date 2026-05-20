@@ -88,7 +88,7 @@ function VendorsDirectory() {
     e.preventDefault();
     if (selectedVendorId === null) return;
 
-    api.put(`/Vendors/${selectedVendorId}`, editFormData)
+    api.put(`/Vendors/${selectedVendorId}`, { id: selectedVendorId, ...editFormData })
       .then(() => {
         alert('Vendor Updated Successfully!');
         handleEditClose();
